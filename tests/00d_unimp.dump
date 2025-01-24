@@ -1,0 +1,19 @@
+
+build/microtests/00d_unimp.riscv:     file format elf32-littleriscv
+
+Contents of section .text:
+ 0000 33000080 731000c0 b70501f0 938585ff  3...s...........
+ 0010 13060000 23a0c500                    ....#...        
+Contents of section .riscv.attributes:
+ 0000 41190000 00726973 63760001 0f000000  A....riscv......
+ 0010 05727633 32693270 3000               .rv32i2p0.      
+
+Disassembly of section .text:
+
+00000000 <start>:
+   0:	80000033          	0x80000033
+   4:	c0001073          	unimp
+   8:	f00105b7          	lui	x11,0xf0010
+   c:	ff858593          	addi	x11,x11,-8 # f000fff8 <start+0xf000fff8>
+  10:	00000613          	addi	x12,x0,0
+  14:	00c5a023          	sw	x12,0(x11)

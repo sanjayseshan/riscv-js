@@ -1,0 +1,23 @@
+
+build/microtests/09a_jalr.riscv:     file format elf32-littleriscv
+
+Contents of section .text:
+ 0000 9300c000 67810000 731000c0 93011000  ....g...s.......
+ 0010 731000c0 b70501f0 938585ff 13060000  s...............
+ 0020 23a0c500                             #...            
+Contents of section .riscv.attributes:
+ 0000 41190000 00726973 63760001 0f000000  A....riscv......
+ 0010 05727633 32693270 3000               .rv32i2p0.      
+
+Disassembly of section .text:
+
+00000000 <start>:
+   0:	00c00093          	addi	x1,x0,12
+   4:	00008167          	jalr	x2,0(x1)
+   8:	c0001073          	unimp
+   c:	00100193          	addi	x3,x0,1
+  10:	c0001073          	unimp
+  14:	f00105b7          	lui	x11,0xf0010
+  18:	ff858593          	addi	x11,x11,-8 # f000fff8 <start+0xf000fff8>
+  1c:	00000613          	addi	x12,x0,0
+  20:	00c5a023          	sw	x12,0(x11)

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+
+<head>
+    <script src="types.js"></script>
+    <script src="decode.js"></script>
+    <script src="alu.js"></script>
+    <script src="execute.js"></script>
+    <script src="processor.js"></script>
+    <script src="mem.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+
+    <script type="module" src="Decoder.js"></script>
+    <title>RISC-V.js</title>
+</head>
+
+<body>
+    <script>
+        $(function () {
+            $("#topbar").load("topbar.html");
+        });
+    </script>
+    <div id="topbar"></div><br>
+
+    <script>
+        $(function () {
+            $("#header").load("header.html");
+        });
+    </script>
+    <div id="header"></div><br>
+    <section>
+        <h1>RISC-V.JS Help</h1>
+    </section>
+    <section>Implementation of RISC-V 32I ISA in JS!</section>
+    <section>
+       <p>How do I create my own tests? For making C tests, see <a href="https://github.com/6192-sp24/lab2_b/tree/main?tab=readme-ov-file#how-does-testing-work">here</a>, <a href="https://github.com/6192-sp24/lab2_b/tree/main/test">here</a>, and <a href="https://github.com/6192-sp24/lab2_b/tree/main/elf2hex">here</a>. To make assembly tests, see <a href="https://github.com/6192-sp24/risc_v_tests">here</a>. Prereq install instructions can be found <a href="https://github.com/6192-sp24/lab4_a?tab=readme-ov-file#write-a-baremetal-multicore-consumer-producer-software-queue-a-software-ring-buffer">here</a>.</p>
+
+       <p>This code is built to support MIT 6.004 and 6.175 tests and should implement the full RV32I ISA but there may still be bugs. It is pretty extensible and built in pure JS.</p>
+    </section>
+    <script>
+        function asm() {
+            document.getElementById("customhex").value = "@0\n"
+            lines = document.getElementById("customasm").value.split("\n")
+            for (i = 0; i < lines.length; i++) {
+                try {
+                    inst = new Instruction.Instruction(lines[i])
+                    document.getElementById("customhex").value += parseInt(inst.bin, 2).toString(16) + "\n"
+                } catch {
+                    alert("error on line "+String(i))
+                    return
+                }
+            }
+            reset(document.getElementById("customhex").value)
+        }
+
+
+        var fileInputT = document.getElementById('fileInput');
+
+        fileInputT.addEventListener('change', function (e) {
+            var file = fileInputT.files[0];
+            var textType = /text.*/;
+
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                data = reader.result;
+                reset(data)
+                document.getElementById("customhex").value = data
+                alert("Loaded custom file")
+
+
+            }
+
+            reader.readAsText(file);
+
+        });
+
+
+        tests = [thelie32, hello_test, sw_test]
+
+        interval = undefined
+
+        function textFile(filename) {
+            var reader = (window.XMLHttpRequest != null) ?
+                new XMLHttpRequest() :
+                new ActiveXObject("Microsoft.XMLHTTP");
+            reader.open("GET", filename, false);
+            reader.send();
+            return reader.responseText
+            // .split(/\r\n|\n|\r/); //split(/(\r\n|\n)/g)
+        }
+
+        function getTest() {
+            fname = document.getElementById('test').value
+            data = textFile("tests/" + fname + ".vmh")
+            dump = textFile("tests/" + fname + ".dump")
+            document.getElementById("customhex").value = dump
+            console.log(data)
+            return data
+        }
+
+        function runProcInt() {
+            x = Processor()
+            // console.log("STATE",x)
+            if (x == -1) clearInterval(interval)
+        }
+
+        function reset(program) {
+            document.getElementById("console").innerHTML = ""
+            document.getElementById("registers").innerHTML = ""
+            document.getElementById("memory").innerHTML = ""
+            if (interval) clearInterval(interval)
+            pc = 0;
+            cycles = 0;
+
+            rf = new Int32Array(32);
+            for (i = 0; i < 32; i++) rf[i] = 0
+            iMem = {}; // Memory for loading instructions
+            dMem = {}; // Memory for loading and storing data
+
+            updateMem(program)
+            x = 0
+            // while (x != -1) x=Processor() 
+
+        }
+
+        function runProcessor() {
+            // reset(program)
+            interval = setInterval(runProcInt, 1000 / parseInt(document.getElementById('speed').value))
+            // x = ()
+        }
+
+    </script>
+
+    <script type="module">
+        import * as Instruction from "./Instruction.js";
+        import * as Decoder from "./Decoder.js";
+        import * as Config from "./Config.js";
+        // console.log()
+        export function getAsm(instr) {
+            try {
+                let instruction = new Instruction.Instruction(toBinary(instr, 32))
+                return instruction.asm
+            } catch (error) {
+                return "error in disasm"
+            }
+            // console.log(instruction)
+        }
+        window.getAsm = getAsm;
+        window.Instruction = Instruction
+    </script>
+
+    <br>
+    <script>
+        $(function () {
+            $("#footer").load("footer.html");
+        });
+    </script>
+    <div id="footer"></div>
+</body>

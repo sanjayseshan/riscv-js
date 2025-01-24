@@ -1,0 +1,31 @@
+
+build/microtests/03_add.riscv:     file format elf32-littleriscv
+
+Contents of section .text:
+ 0000 93001000 33810000 b3011100 33822100  ....3.......3.!.
+ 0010 b3023200 33834200 9303f07f 33847000  ..2.3.B.....3.p.
+ 0020 b3847300 1305e0ff b385a000 731000c0  ..s.........s...
+ 0030 b70501f0 938585ff 13060000 23a0c500  ............#...
+Contents of section .riscv.attributes:
+ 0000 41190000 00726973 63760001 0f000000  A....riscv......
+ 0010 05727633 32693270 3000               .rv32i2p0.      
+
+Disassembly of section .text:
+
+00000000 <start>:
+   0:	00100093          	addi	x1,x0,1
+   4:	00008133          	add	x2,x1,x0
+   8:	001101b3          	add	x3,x2,x1
+   c:	00218233          	add	x4,x3,x2
+  10:	003202b3          	add	x5,x4,x3
+  14:	00428333          	add	x6,x5,x4
+  18:	7ff00393          	addi	x7,x0,2047
+  1c:	00708433          	add	x8,x1,x7
+  20:	007384b3          	add	x9,x7,x7
+  24:	ffe00513          	addi	x10,x0,-2
+  28:	00a085b3          	add	x11,x1,x10
+  2c:	c0001073          	unimp
+  30:	f00105b7          	lui	x11,0xf0010
+  34:	ff858593          	addi	x11,x11,-8 # f000fff8 <start+0xf000fff8>
+  38:	00000613          	addi	x12,x0,0
+  3c:	00c5a023          	sw	x12,0(x11)

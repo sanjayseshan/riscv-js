@@ -1,0 +1,202 @@
+
+build/fullasmtests/andi.riscv:     file format elf32-littleriscv
+
+Contents of section .text:
+ 0000 b70001ff 938000f0 93f1f0f0 b70e01ff  ................
+ 0010 938e0ef0 130e2000 6396d11b b710f00f  ...... .c.......
+ 0020 938000ff 93f1000f 930e000f 130e3000  ..............0.
+ 0030 639ad119 b700ff00 9380f00f 93f1f070  c..............p
+ 0040 930ef000 130e4000 639ed117 b7f00ff0  ......@.c.......
+ 0050 9380f000 93f1000f 930e0000 130e5000  ..............P.
+ 0060 6392d117 b70001ff 938000f0 93f0000f  c...............
+ 0070 930e0000 130e6000 6396d015 13020000  ......`.c.......
+ 0080 b710f00f 938000ff 93f1f070 13830100  ...........p....
+ 0090 13021200 93022000 e31452fe 930e0070  ...... ...R....p
+ 00a0 130e7000 6310d313 13020000 b700ff00  ..p.c...........
+ 00b0 9380f00f 93f1000f 13000000 13830100  ................
+ 00c0 13021200 93022000 e31252fe 930e000f  ...... ...R.....
+ 00d0 130e8000 6318d30f 13020000 b7f00ff0  ....c...........
+ 00e0 9380f000 93f1f0f0 13000000 13000000  ................
+ 00f0 13830100 13021200 93022000 e31052fe  .......... ...R.
+ 0100 b7fe0ff0 938efe00 130e9000 631cd30b  ............c...
+ 0110 13020000 b710f00f 938000ff 93f1f070  ...............p
+ 0120 13021200 93022000 e31652fe 930e0070  ...... ...R....p
+ 0130 130ea000 6398d109 13020000 b700ff00  ....c...........
+ 0140 9380f00f 13000000 93f1000f 13021200  ................
+ 0150 93022000 e31452fe 930e000f 130eb000  .. ...R.........
+ 0160 6392d107 13020000 b7f00ff0 9380f000  c...............
+ 0170 13000000 13000000 93f1f070 13021200  ...........p....
+ 0180 93022000 e31252fe 930ef000 130ec000  .. ...R.........
+ 0190 639ad103 9370000f 930e0000 130ed000  c....p..........
+ 01a0 6392d003 b700ff00 9380f00f 13f0f070  c..............p
+ 01b0 930e0000 130ee000 6316d001 631ec001  ........c...c...
+ 01c0 130e1000 b70501f0 938585ff 13060000  ................
+ 01d0 a3a0c500 6f00c001 130e0000 b70501f0  ....o...........
+ 01e0 938585ff 13060000 23a0c500 6f004000  ........#...o.@.
+ 01f0 37150040 2320c501 6f000000 00000000  7..@# ..o.......
+ 0200 00000000                             ....            
+Contents of section .riscv.attributes:
+ 0000 41190000 00726973 63760001 0f000000  A....riscv......
+ 0010 05727633 32693270 3000               .rv32i2p0.      
+
+Disassembly of section .text:
+
+00000000 <_start>:
+   0:	ff0100b7          	lui	x1,0xff010
+   4:	f0008093          	addi	x1,x1,-256 # ff00ff00 <begin_signature+0xff00ef00>
+   8:	f0f0f193          	andi	x3,x1,-241
+   c:	ff010eb7          	lui	x29,0xff010
+  10:	f00e8e93          	addi	x29,x29,-256 # ff00ff00 <begin_signature+0xff00ef00>
+  14:	00200e13          	addi	x28,x0,2
+  18:	1bd19663          	bne	x3,x29,1c4 <fail>
+
+0000001c <test_3>:
+  1c:	0ff010b7          	lui	x1,0xff01
+  20:	ff008093          	addi	x1,x1,-16 # ff00ff0 <begin_signature+0xfeffff0>
+  24:	0f00f193          	andi	x3,x1,240
+  28:	0f000e93          	addi	x29,x0,240
+  2c:	00300e13          	addi	x28,x0,3
+  30:	19d19a63          	bne	x3,x29,1c4 <fail>
+
+00000034 <test_4>:
+  34:	00ff00b7          	lui	x1,0xff0
+  38:	0ff08093          	addi	x1,x1,255 # ff00ff <begin_signature+0xfef0ff>
+  3c:	70f0f193          	andi	x3,x1,1807
+  40:	00f00e93          	addi	x29,x0,15
+  44:	00400e13          	addi	x28,x0,4
+  48:	17d19e63          	bne	x3,x29,1c4 <fail>
+
+0000004c <test_5>:
+  4c:	f00ff0b7          	lui	x1,0xf00ff
+  50:	00f08093          	addi	x1,x1,15 # f00ff00f <begin_signature+0xf00fe00f>
+  54:	0f00f193          	andi	x3,x1,240
+  58:	00000e93          	addi	x29,x0,0
+  5c:	00500e13          	addi	x28,x0,5
+  60:	17d19263          	bne	x3,x29,1c4 <fail>
+
+00000064 <test_6>:
+  64:	ff0100b7          	lui	x1,0xff010
+  68:	f0008093          	addi	x1,x1,-256 # ff00ff00 <begin_signature+0xff00ef00>
+  6c:	0f00f093          	andi	x1,x1,240
+  70:	00000e93          	addi	x29,x0,0
+  74:	00600e13          	addi	x28,x0,6
+  78:	15d09663          	bne	x1,x29,1c4 <fail>
+
+0000007c <test_7>:
+  7c:	00000213          	addi	x4,x0,0
+  80:	0ff010b7          	lui	x1,0xff01
+  84:	ff008093          	addi	x1,x1,-16 # ff00ff0 <begin_signature+0xfeffff0>
+  88:	70f0f193          	andi	x3,x1,1807
+  8c:	00018313          	addi	x6,x3,0
+  90:	00120213          	addi	x4,x4,1 # 1 <_start+0x1>
+  94:	00200293          	addi	x5,x0,2
+  98:	fe5214e3          	bne	x4,x5,80 <test_7+0x4>
+  9c:	70000e93          	addi	x29,x0,1792
+  a0:	00700e13          	addi	x28,x0,7
+  a4:	13d31063          	bne	x6,x29,1c4 <fail>
+
+000000a8 <test_8>:
+  a8:	00000213          	addi	x4,x0,0
+  ac:	00ff00b7          	lui	x1,0xff0
+  b0:	0ff08093          	addi	x1,x1,255 # ff00ff <begin_signature+0xfef0ff>
+  b4:	0f00f193          	andi	x3,x1,240
+  b8:	00000013          	addi	x0,x0,0
+  bc:	00018313          	addi	x6,x3,0
+  c0:	00120213          	addi	x4,x4,1 # 1 <_start+0x1>
+  c4:	00200293          	addi	x5,x0,2
+  c8:	fe5212e3          	bne	x4,x5,ac <test_8+0x4>
+  cc:	0f000e93          	addi	x29,x0,240
+  d0:	00800e13          	addi	x28,x0,8
+  d4:	0fd31863          	bne	x6,x29,1c4 <fail>
+
+000000d8 <test_9>:
+  d8:	00000213          	addi	x4,x0,0
+  dc:	f00ff0b7          	lui	x1,0xf00ff
+  e0:	00f08093          	addi	x1,x1,15 # f00ff00f <begin_signature+0xf00fe00f>
+  e4:	f0f0f193          	andi	x3,x1,-241
+  e8:	00000013          	addi	x0,x0,0
+  ec:	00000013          	addi	x0,x0,0
+  f0:	00018313          	addi	x6,x3,0
+  f4:	00120213          	addi	x4,x4,1 # 1 <_start+0x1>
+  f8:	00200293          	addi	x5,x0,2
+  fc:	fe5210e3          	bne	x4,x5,dc <test_9+0x4>
+ 100:	f00ffeb7          	lui	x29,0xf00ff
+ 104:	00fe8e93          	addi	x29,x29,15 # f00ff00f <begin_signature+0xf00fe00f>
+ 108:	00900e13          	addi	x28,x0,9
+ 10c:	0bd31c63          	bne	x6,x29,1c4 <fail>
+
+00000110 <test_10>:
+ 110:	00000213          	addi	x4,x0,0
+ 114:	0ff010b7          	lui	x1,0xff01
+ 118:	ff008093          	addi	x1,x1,-16 # ff00ff0 <begin_signature+0xfeffff0>
+ 11c:	70f0f193          	andi	x3,x1,1807
+ 120:	00120213          	addi	x4,x4,1 # 1 <_start+0x1>
+ 124:	00200293          	addi	x5,x0,2
+ 128:	fe5216e3          	bne	x4,x5,114 <test_10+0x4>
+ 12c:	70000e93          	addi	x29,x0,1792
+ 130:	00a00e13          	addi	x28,x0,10
+ 134:	09d19863          	bne	x3,x29,1c4 <fail>
+
+00000138 <test_11>:
+ 138:	00000213          	addi	x4,x0,0
+ 13c:	00ff00b7          	lui	x1,0xff0
+ 140:	0ff08093          	addi	x1,x1,255 # ff00ff <begin_signature+0xfef0ff>
+ 144:	00000013          	addi	x0,x0,0
+ 148:	0f00f193          	andi	x3,x1,240
+ 14c:	00120213          	addi	x4,x4,1 # 1 <_start+0x1>
+ 150:	00200293          	addi	x5,x0,2
+ 154:	fe5214e3          	bne	x4,x5,13c <test_11+0x4>
+ 158:	0f000e93          	addi	x29,x0,240
+ 15c:	00b00e13          	addi	x28,x0,11
+ 160:	07d19263          	bne	x3,x29,1c4 <fail>
+
+00000164 <test_12>:
+ 164:	00000213          	addi	x4,x0,0
+ 168:	f00ff0b7          	lui	x1,0xf00ff
+ 16c:	00f08093          	addi	x1,x1,15 # f00ff00f <begin_signature+0xf00fe00f>
+ 170:	00000013          	addi	x0,x0,0
+ 174:	00000013          	addi	x0,x0,0
+ 178:	70f0f193          	andi	x3,x1,1807
+ 17c:	00120213          	addi	x4,x4,1 # 1 <_start+0x1>
+ 180:	00200293          	addi	x5,x0,2
+ 184:	fe5212e3          	bne	x4,x5,168 <test_12+0x4>
+ 188:	00f00e93          	addi	x29,x0,15
+ 18c:	00c00e13          	addi	x28,x0,12
+ 190:	03d19a63          	bne	x3,x29,1c4 <fail>
+
+00000194 <test_13>:
+ 194:	0f007093          	andi	x1,x0,240
+ 198:	00000e93          	addi	x29,x0,0
+ 19c:	00d00e13          	addi	x28,x0,13
+ 1a0:	03d09263          	bne	x1,x29,1c4 <fail>
+
+000001a4 <test_14>:
+ 1a4:	00ff00b7          	lui	x1,0xff0
+ 1a8:	0ff08093          	addi	x1,x1,255 # ff00ff <begin_signature+0xfef0ff>
+ 1ac:	70f0f013          	andi	x0,x1,1807
+ 1b0:	00000e93          	addi	x29,x0,0
+ 1b4:	00e00e13          	addi	x28,x0,14
+ 1b8:	01d01663          	bne	x0,x29,1c4 <fail>
+ 1bc:	01c01e63          	bne	x0,x28,1d8 <pass>
+ 1c0:	00100e13          	addi	x28,x0,1
+
+000001c4 <fail>:
+ 1c4:	f00105b7          	lui	x11,0xf0010
+ 1c8:	ff858593          	addi	x11,x11,-8 # f000fff8 <begin_signature+0xf000eff8>
+ 1cc:	00000613          	addi	x12,x0,0
+ 1d0:	00c5a0a3          	sw	x12,1(x11)
+ 1d4:	01c0006f          	jal	x0,1f0 <exit>
+
+000001d8 <pass>:
+ 1d8:	00000e13          	addi	x28,x0,0
+ 1dc:	f00105b7          	lui	x11,0xf0010
+ 1e0:	ff858593          	addi	x11,x11,-8 # f000fff8 <begin_signature+0xf000eff8>
+ 1e4:	00000613          	addi	x12,x0,0
+ 1e8:	00c5a023          	sw	x12,0(x11)
+ 1ec:	0040006f          	jal	x0,1f0 <exit>
+
+000001f0 <exit>:
+ 1f0:	40001537          	lui	x10,0x40001
+ 1f4:	01c52023          	sw	x28,0(x10) # 40001000 <begin_signature+0x40000000>
+ 1f8:	0000006f          	jal	x0,1f8 <exit+0x8>
+	...

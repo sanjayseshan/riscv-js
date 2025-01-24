@@ -1,0 +1,64 @@
+
+build/fullasmtests/auipc.riscv:     file format elf32-littleriscv
+
+Contents of section .text:
+ 0000 17250000 1305c571 ef054000 3305b540  .%.....q..@.3..@
+ 0010 b72e0000 938e0e71 130e2000 6316d503  .......q.. .c...
+ 0020 17e5ffff 1305c58f ef054000 3305b540  ..........@.3..@
+ 0030 b7eeffff 938e0e8f 130e3000 6316d501  ..........0.c...
+ 0040 631ec001 130e1000 b70501f0 938585ff  c...............
+ 0050 13060000 a3a0c500 6f00c001 130e0000  ........o.......
+ 0060 b70501f0 938585ff 13060000 23a0c500  ............#...
+ 0070 6f004000 37150040 2320c501 6f000000  o.@.7..@# ..o...
+ 0080 00000000 00000000 00000000 00000000  ................
+ 0090 00000000 00000000 00000000 00000000  ................
+ 00a0 00000000 00000000 00000000 00000000  ................
+ 00b0 00000000 00000000 00000000           ............    
+Contents of section .riscv.attributes:
+ 0000 41190000 00726973 63760001 0f000000  A....riscv......
+ 0010 05727633 32693270 3000               .rv32i2p0.      
+
+Disassembly of section .text:
+
+00000000 <_start>:
+   0:	00002517          	auipc	x10,0x2
+   4:	71c50513          	addi	x10,x10,1820 # 271c <begin_signature+0x171c>
+   8:	004005ef          	jal	x11,c <_start+0xc>
+   c:	40b50533          	sub	x10,x10,x11
+  10:	00002eb7          	lui	x29,0x2
+  14:	710e8e93          	addi	x29,x29,1808 # 2710 <begin_signature+0x1710>
+  18:	00200e13          	addi	x28,x0,2
+  1c:	03d51663          	bne	x10,x29,48 <fail>
+
+00000020 <test_3>:
+  20:	ffffe517          	auipc	x10,0xffffe
+  24:	8fc50513          	addi	x10,x10,-1796 # ffffd91c <begin_signature+0xffffc91c>
+  28:	004005ef          	jal	x11,2c <test_3+0xc>
+  2c:	40b50533          	sub	x10,x10,x11
+  30:	ffffeeb7          	lui	x29,0xffffe
+  34:	8f0e8e93          	addi	x29,x29,-1808 # ffffd8f0 <begin_signature+0xffffc8f0>
+  38:	00300e13          	addi	x28,x0,3
+  3c:	01d51663          	bne	x10,x29,48 <fail>
+  40:	01c01e63          	bne	x0,x28,5c <pass>
+  44:	00100e13          	addi	x28,x0,1
+
+00000048 <fail>:
+  48:	f00105b7          	lui	x11,0xf0010
+  4c:	ff858593          	addi	x11,x11,-8 # f000fff8 <begin_signature+0xf000eff8>
+  50:	00000613          	addi	x12,x0,0
+  54:	00c5a0a3          	sw	x12,1(x11)
+  58:	01c0006f          	jal	x0,74 <exit>
+
+0000005c <pass>:
+  5c:	00000e13          	addi	x28,x0,0
+  60:	f00105b7          	lui	x11,0xf0010
+  64:	ff858593          	addi	x11,x11,-8 # f000fff8 <begin_signature+0xf000eff8>
+  68:	00000613          	addi	x12,x0,0
+  6c:	00c5a023          	sw	x12,0(x11)
+  70:	0040006f          	jal	x0,74 <exit>
+
+00000074 <exit>:
+  74:	40001537          	lui	x10,0x40001
+  78:	01c52023          	sw	x28,0(x10) # 40001000 <begin_signature+0x40000000>
+  7c:	0000006f          	jal	x0,7c <exit+0x8>
+	...

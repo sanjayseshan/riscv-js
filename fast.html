@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+
+<head>
+    <script src="types.js"></script>
+    <script src="decode.js"></script>
+    <script src="alu.js"></script>
+    <script src="execute.js"></script>
+    <script src="processor_fast.js"></script>
+    <script src="mem.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+
+    <script type="module" src="Decoder.js"></script>
+    <title>RISC-V.js</title>
+</head>
+
+<body>
+    <script>
+        $(function () {
+            $("#topbar").load("topbar.html");
+        });
+    </script>
+    <div id="topbar"></div><br>
+
+    <script>
+        $(function () {
+            $("#header").load("header.html");
+        });
+    </script>
+    <div id="header"></div><br>
+    <section>
+        <h1>RISC-V.JS (Fast -- no debug)</h1>
+    </section>
+    <section>Implementation of RISC-V 32I ISA in JS!</section>
+    <section>
+        <b id="instr"></b><br><br>
+        Console:
+        <pre id="console" style="max-height:300px; overflow: scroll;"></pre>
+
+        <br><br>
+        Testbench:
+        <select class="form-control" id="test">
+            <option></option>
+            <option>00a_unimp</option>
+            <option>00b_unimp</option>
+            <option>00c_unimp</option>
+            <option>00d_unimp</option>
+            <option>00e_unimp</option>
+            <option>00f_unimp</option>
+            <option>00g_unimp</option>
+            <option>00h_unimp</option>
+            <option>00i_unimp</option>
+            <option>01_lui</option>
+            <option>02_addi</option>
+            <option>03_add</option>
+            <option>04_bne</option>
+            <option>05a_jal</option>
+            <option>05b_jal</option>
+            <option>06_auipc</option>
+            <option>07a_lw</option>
+            <option>07b_lw</option>
+            <option>08a_sw</option>
+            <option>08b_sw</option>
+            <option>09a_jalr</option>
+            <option>09b_jalr</option>
+            <option>09c_jalr</option>
+            <option>10a_ops</option>
+            <option>10b_ops</option>
+            <option>11_opimms</option>
+            <option>12_branches</option>
+            <option>add32</option>
+            <option>addi</option>
+            <option>add</option>
+            <option>and32</option>
+            <option>andi</option>
+            <option>and</option>
+            <option>auipc</option>
+            <option>beq</option>
+            <option>bge</option>
+            <option>bgeu</option>
+            <option>blt</option>
+            <option>bltu</option>
+            <option>bne</option>
+            <option>bpred_bht</option>
+            <option>bpred_j_noloop</option>
+            <option>bpred_j</option>
+            <option>bpred_ras</option>
+            <option>cache</option>
+            <option>hello32</option>
+            <option>jal</option>
+            <option>jalr</option>
+            <option>j</option>
+            <option>lui</option>
+            <option>lw</option>
+            <option>matmul32</option>
+            <option>mul32</option>
+            <option>or32</option>
+            <option>ori</option>
+            <option>or</option>
+            <option>quicksort</option>
+            <option>reverse32</option>
+            <option>simple</option>
+            <option>slli</option>
+            <option>sll</option>
+            <option>slti</option>
+            <option>slt</option>
+            <option>srai</option>
+            <option>sra</option>
+            <option>srli</option>
+            <option>srl</option>
+            <option>sub32</option>
+            <option>sub</option>
+            <option>sw</option>
+            <option>thelie32</option>
+            <option>thuemorse32</option>
+            <option>xor32</option>
+            <option>xori</option>
+            <option>xor</option>
+
+            <!-- <option value="0">thelie32</option>
+            <option value="1">hello_test</option>
+            <option value="2">sw_test</option> -->
+        </select><input class="btn btn-danger " type="button" onclick="reset(getTest()); alert('Loaded')"
+            value="Load and Reset">
+        <br><br>
+        <input class="btn btn-success " type="button" onclick="runProcessor()" value="Run!">
+
+        <!-- <input class="btn btn-danger" type="button" onclick="reset(getTest())" value="Reset"> -->
+        <input class="btn btn-warning" type="button" onclick="clearInterval(interval)" value="Pause">
+        <input class="btn btn-success " type="button"
+            onclick="interval = setInterval(runProcInt, 1000/parseInt(document.getElementById('speed').value))"
+            value="Resume">
+        <input class="btn btn-success " type="button" onclick="clearInterval(interval);Processor()" value="Step">
+        <br><br>Max Speed (Hz): <input class="form-control" type="number" value="200" id="speed"
+            onchange="clearInterval(interval);interval = setInterval(runProcInt, 1000/parseInt(document.getElementById('speed').value))">
+        <br><br>
+        Upload custom hex: <input type="file" class="form-control" id="fileInput" accept=".vmh,.hex">
+        <br><br>
+        Custom assembly (simple instructions only):
+        <textarea class="form-control" id="customasm"></textarea>
+        <input class="btn btn-danger " type="button" onclick="asm(); alert('loaded')" value="Assemble and load">
+        <br>
+        Loaded hex or dump:
+        <textarea class="form-control" id="customhex" readonly></textarea>
+    </section>
+    <script>
+        function asm() {
+            document.getElementById("customhex").value = "@0\n"
+            lines = document.getElementById("customasm").value.split("\n")
+            for (i = 0; i < lines.length; i++) {
+                try {
+                    inst = new Instruction.Instruction(lines[i])
+                    document.getElementById("customhex").value += parseInt(inst.bin, 2).toString(16) + "\n"
+                } catch {
+                    alert("error on line "+String(i))
+                    return
+                }
+
+            }
+            reset(document.getElementById("customhex").value)
+        }
+
+
+        var fileInputT = document.getElementById('fileInput');
+
+        fileInputT.addEventListener('change', function (e) {
+            var file = fileInputT.files[0];
+            var textType = /text.*/;
+
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                data = reader.result;
+                reset(data)
+                document.getElementById("customhex").value = data
+                alert("Loaded custom file")
+
+
+            }
+
+            reader.readAsText(file);
+
+        });
+
+
+        tests = [thelie32, hello_test, sw_test]
+
+        interval = undefined
+
+        function textFile(filename) {
+            var reader = (window.XMLHttpRequest != null) ?
+                new XMLHttpRequest() :
+                new ActiveXObject("Microsoft.XMLHTTP");
+            reader.open("GET", filename, false);
+            reader.send();
+            return reader.responseText
+            // .split(/\r\n|\n|\r/); //split(/(\r\n|\n)/g)
+        }
+
+        function getTest() {
+            fname = document.getElementById('test').value
+            data = textFile("tests/" + fname + ".vmh")
+            dump = textFile("tests/" + fname + ".dump")
+            document.getElementById("customhex").value = dump
+            console.log(data)
+            return data
+        }
+
+        function runProcInt() {
+            x = Processor()
+            // console.log("STATE",x)
+            if (x == -1) clearInterval(interval)
+        }
+
+        function reset(program) {
+            document.getElementById("console").innerHTML = ""
+            // document.getElementById("registers").innerHTML = ""
+            // document.getElementById("memory").innerHTML = ""
+
+            if (interval) clearInterval(interval)
+            pc = 0;
+            cycles = 0;
+            document.getElementById("instr").innerHTML = "pc: " + pc.toString(16) 
+
+            rf = new Int32Array(32);
+            for (i = 0; i < 32; i++) rf[i] = 0
+            iMem = {}; // Memory for loading instructions
+            dMem = {}; // Memory for loading and storing data
+
+            updateMem(program)
+            x = 0
+            // while (x != -1) x=Processor() 
+
+        }
+
+        function runProcessor() {
+            // reset(program)
+            interval = setInterval(runProcInt, 1000 / parseInt(document.getElementById('speed').value))
+            // x = ()
+        }
+
+    </script>
+
+    <script type="module">
+        import * as Instruction from "./Instruction.js";
+        import * as Decoder from "./Decoder.js";
+        import * as Config from "./Config.js";
+        // console.log()
+        export function getAsm(instr) {
+            try {
+                let instruction = new Instruction.Instruction(toBinary(instr, 32))
+                return instruction.asm
+            } catch (error) {
+                return "error in disasm"
+            }
+            // console.log(instruction)
+        }
+        window.getAsm = getAsm;
+        window.Instruction = Instruction
+    </script>
+
+    <br>
+    <script>
+        $(function () {
+            $("#footer").load("footer.html");
+        });
+    </script>
+    <div id="footer"></div>
+</body>

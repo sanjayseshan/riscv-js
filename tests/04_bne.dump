@@ -1,0 +1,26 @@
+
+build/microtests/04_bne.riscv:     file format elf32-littleriscv
+
+Contents of section .text:
+ 0000 9300a000 13011000 9380f0ff 33012100  ............3.!.
+ 0010 e39c00fe 731000c0 b70501f0 938585ff  ....s...........
+ 0020 13060000 23a0c500                    ....#...        
+Contents of section .riscv.attributes:
+ 0000 41190000 00726973 63760001 0f000000  A....riscv......
+ 0010 05727633 32693270 3000               .rv32i2p0.      
+
+Disassembly of section .text:
+
+00000000 <start>:
+   0:	00a00093          	addi	x1,x0,10
+   4:	00100113          	addi	x2,x0,1
+
+00000008 <loop_start>:
+   8:	fff08093          	addi	x1,x1,-1
+   c:	00210133          	add	x2,x2,x2
+  10:	fe009ce3          	bne	x1,x0,8 <loop_start>
+  14:	c0001073          	unimp
+  18:	f00105b7          	lui	x11,0xf0010
+  1c:	ff858593          	addi	x11,x11,-8 # f000fff8 <loop_start+0xf000fff0>
+  20:	00000613          	addi	x12,x0,0
+  24:	00c5a023          	sw	x12,0(x11)

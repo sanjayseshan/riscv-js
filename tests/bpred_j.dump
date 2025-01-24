@@ -1,0 +1,123 @@
+
+build/fullasmtests/bpred_j.riscv:     file format elf32-littleriscv
+
+Contents of section .text:
+ 0000 13044006 130e0000 6f008007 130e1000  ..@.....o.......
+ 0010 6f008007 130e0001 6ff09fff 130ef000  o.......o.......
+ 0020 6ff09fff 130ee000 6ff09fff 130ed000  o.......o.......
+ 0030 6ff09fff 130ec000 6ff09fff 130eb000  o.......o.......
+ 0040 6ff09fff 130ea000 6ff09fff 130e9000  o.......o.......
+ 0050 6ff09fff 130e8000 6ff09fff 130e7000  o.......o.....p.
+ 0060 6ff09fff 130e6000 6ff09fff 130e5000  o.....`.o.....P.
+ 0070 6ff09fff 130e4000 6ff09fff 130e3000  o.....@.o.....0.
+ 0080 6ff09fff 130e2000 1304f4ff e31e04f6  o..... .........
+ 0090 63020e02 6f00c000 631ec001 130e1000  c...o...c.......
+ 00a0 b70501f0 938585ff 13060000 a3a0c500  ................
+ 00b0 6f00c001 130e0000 b70501f0 938585ff  o...............
+ 00c0 13060000 23a0c500 6f004000 37150040  ....#...o.@.7..@
+ 00d0 2320c501 6f000000 00000000 00000000  # ..o...........
+ 00e0 00000000 00000000 00000000 00000000  ................
+ 00f0 00000000 00000000 00000000 00000000  ................
+ 0100 00000000                             ....            
+Contents of section .riscv.attributes:
+ 0000 41190000 00726973 63760001 0f000000  A....riscv......
+ 0010 05727633 32693270 3000               .rv32i2p0.      
+
+Disassembly of section .text:
+
+00000000 <_start>:
+   0:	06400413          	addi	x8,x0,100
+   4:	00000e13          	addi	x28,x0,0
+
+00000008 <loopstart>:
+   8:	0780006f          	jal	x0,80 <step1>
+   c:	00100e13          	addi	x28,x0,1
+
+00000010 <step15>:
+  10:	0780006f          	jal	x0,88 <step16>
+  14:	01000e13          	addi	x28,x0,16
+
+00000018 <step14>:
+  18:	ff9ff06f          	jal	x0,10 <step15>
+  1c:	00f00e13          	addi	x28,x0,15
+
+00000020 <step13>:
+  20:	ff9ff06f          	jal	x0,18 <step14>
+  24:	00e00e13          	addi	x28,x0,14
+
+00000028 <step12>:
+  28:	ff9ff06f          	jal	x0,20 <step13>
+  2c:	00d00e13          	addi	x28,x0,13
+
+00000030 <step11>:
+  30:	ff9ff06f          	jal	x0,28 <step12>
+  34:	00c00e13          	addi	x28,x0,12
+
+00000038 <step10>:
+  38:	ff9ff06f          	jal	x0,30 <step11>
+  3c:	00b00e13          	addi	x28,x0,11
+
+00000040 <step9>:
+  40:	ff9ff06f          	jal	x0,38 <step10>
+  44:	00a00e13          	addi	x28,x0,10
+
+00000048 <step8>:
+  48:	ff9ff06f          	jal	x0,40 <step9>
+  4c:	00900e13          	addi	x28,x0,9
+
+00000050 <step7>:
+  50:	ff9ff06f          	jal	x0,48 <step8>
+  54:	00800e13          	addi	x28,x0,8
+
+00000058 <step6>:
+  58:	ff9ff06f          	jal	x0,50 <step7>
+  5c:	00700e13          	addi	x28,x0,7
+
+00000060 <step5>:
+  60:	ff9ff06f          	jal	x0,58 <step6>
+  64:	00600e13          	addi	x28,x0,6
+
+00000068 <step4>:
+  68:	ff9ff06f          	jal	x0,60 <step5>
+  6c:	00500e13          	addi	x28,x0,5
+
+00000070 <step3>:
+  70:	ff9ff06f          	jal	x0,68 <step4>
+  74:	00400e13          	addi	x28,x0,4
+
+00000078 <step2>:
+  78:	ff9ff06f          	jal	x0,70 <step3>
+  7c:	00300e13          	addi	x28,x0,3
+
+00000080 <step1>:
+  80:	ff9ff06f          	jal	x0,78 <step2>
+  84:	00200e13          	addi	x28,x0,2
+
+00000088 <step16>:
+  88:	fff40413          	addi	x8,x8,-1
+  8c:	f6041ee3          	bne	x8,x0,8 <loopstart>
+  90:	020e0263          	beq	x28,x0,b4 <pass>
+  94:	00c0006f          	jal	x0,a0 <fail>
+  98:	01c01e63          	bne	x0,x28,b4 <pass>
+  9c:	00100e13          	addi	x28,x0,1
+
+000000a0 <fail>:
+  a0:	f00105b7          	lui	x11,0xf0010
+  a4:	ff858593          	addi	x11,x11,-8 # f000fff8 <begin_signature+0xf000eff8>
+  a8:	00000613          	addi	x12,x0,0
+  ac:	00c5a0a3          	sw	x12,1(x11)
+  b0:	01c0006f          	jal	x0,cc <exit>
+
+000000b4 <pass>:
+  b4:	00000e13          	addi	x28,x0,0
+  b8:	f00105b7          	lui	x11,0xf0010
+  bc:	ff858593          	addi	x11,x11,-8 # f000fff8 <begin_signature+0xf000eff8>
+  c0:	00000613          	addi	x12,x0,0
+  c4:	00c5a023          	sw	x12,0(x11)
+  c8:	0040006f          	jal	x0,cc <exit>
+
+000000cc <exit>:
+  cc:	40001537          	lui	x10,0x40001
+  d0:	01c52023          	sw	x28,0(x10) # 40001000 <begin_signature+0x40000000>
+  d4:	0000006f          	jal	x0,d4 <exit+0x8>
+	...

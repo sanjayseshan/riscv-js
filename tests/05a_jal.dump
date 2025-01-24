@@ -1,0 +1,23 @@
+
+build/microtests/05a_jal.riscv:     file format elf32-littleriscv
+
+Contents of section .text:
+ 0000 ef008000 731000c0 13011000 731000c0  ....s.......s...
+ 0010 b70501f0 938585ff 13060000 23a0c500  ............#...
+Contents of section .riscv.attributes:
+ 0000 41190000 00726973 63760001 0f000000  A....riscv......
+ 0010 05727633 32693270 3000               .rv32i2p0.      
+
+Disassembly of section .text:
+
+00000000 <start>:
+   0:	008000ef          	jal	x1,8 <b>
+   4:	c0001073          	unimp
+
+00000008 <b>:
+   8:	00100113          	addi	x2,x0,1
+   c:	c0001073          	unimp
+  10:	f00105b7          	lui	x11,0xf0010
+  14:	ff858593          	addi	x11,x11,-8 # f000fff8 <b+0xf000fff0>
+  18:	00000613          	addi	x12,x0,0
+  1c:	00c5a023          	sw	x12,0(x11)

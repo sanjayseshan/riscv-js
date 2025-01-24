@@ -1,0 +1,46 @@
+
+build/microtests/11_opimms.riscv:     file format elf32-littleriscv
+
+Contents of section .text:
+ 0000 93003012 1381f0cd 937151f5 13e2010f  ..0......qQ.....
+ 0010 9342d20c 13933200 93534340 13d45300  .B....2..SC@..S.
+ 0020 93a40300 13b50300 93a5f3ff 13b6f3ff  ................
+ 0030 93a60380 13b70380 93a7f37f 13b8f37f  ................
+ 0040 93280500 13390500 9329f5ff 133af5ff  .(...9...)...:..
+ 0050 932a0580 133b0580 932bf57f 133cf57f  .*...;...+...<..
+ 0060 b70501f0 938585ff 13060000 23a0c500  ............#...
+Contents of section .riscv.attributes:
+ 0000 41190000 00726973 63760001 0f000000  A....riscv......
+ 0010 05727633 32693270 3000               .rv32i2p0.      
+
+Disassembly of section .text:
+
+00000000 <start>:
+   0:	12300093          	addi	x1,x0,291
+   4:	cdf08113          	addi	x2,x1,-801
+   8:	f5517193          	andi	x3,x2,-171
+   c:	0f01e213          	ori	x4,x3,240
+  10:	0cd24293          	xori	x5,x4,205
+  14:	00329313          	slli	x6,x5,0x3
+  18:	40435393          	srai	x7,x6,0x4
+  1c:	0053d413          	srli	x8,x7,0x5
+  20:	0003a493          	slti	x9,x7,0
+  24:	0003b513          	sltiu	x10,x7,0
+  28:	fff3a593          	slti	x11,x7,-1
+  2c:	fff3b613          	sltiu	x12,x7,-1
+  30:	8003a693          	slti	x13,x7,-2048
+  34:	8003b713          	sltiu	x14,x7,-2048
+  38:	7ff3a793          	slti	x15,x7,2047
+  3c:	7ff3b813          	sltiu	x16,x7,2047
+  40:	00052893          	slti	x17,x10,0
+  44:	00053913          	sltiu	x18,x10,0
+  48:	fff52993          	slti	x19,x10,-1
+  4c:	fff53a13          	sltiu	x20,x10,-1
+  50:	80052a93          	slti	x21,x10,-2048
+  54:	80053b13          	sltiu	x22,x10,-2048
+  58:	7ff52b93          	slti	x23,x10,2047
+  5c:	7ff53c13          	sltiu	x24,x10,2047
+  60:	f00105b7          	lui	x11,0xf0010
+  64:	ff858593          	addi	x11,x11,-8 # f000fff8 <start+0xf000fff8>
+  68:	00000613          	addi	x12,x0,0
+  6c:	00c5a023          	sw	x12,0(x11)
