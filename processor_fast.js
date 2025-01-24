@@ -38,7 +38,7 @@ function Processor() {
 
     else if (eInst.iType == STORE) {
 
-        dMem[eInst.addr] = getStoreData(dMem[eInst.addr], eInst.data, eInst.addr & (0x3), dInst.memFunc)
+        dMem[eInst.addr] = getStoreData(dMem[eInst.addr& (~0x3)], eInst.data, eInst.addr & (0x3), dInst.memFunc)
         if (eInst.addr == 0xf000fff0) {
             res = String.fromCharCode(eInst.data);
             console.log("FROM PROCESSOR: ", res)

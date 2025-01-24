@@ -5,6 +5,7 @@ rf = new Int32Array(32);
 for (i = 0; i < 32; i++) rf[i] = 0
 iMem = {};
 dMem = {};
+cacheMM = {};
 function isValid(x) {
     if (x == undefined) return false;
     return x.valid
@@ -24,6 +25,8 @@ function toBinary(number, bits = 8) {
 function Processor() {
 
     inst = iMem[pc];
+    handleMem(pc, 0, 0, "i")
+
     console.log("PC ", pc.toString(16))
     dInst = decode(inst);
     rVal1 = rf[dInst.src1];
@@ -31,18 +34,23 @@ function Processor() {
 
     eInst = execute(dInst, rVal1, rVal2, pc);
 
+    if (eInst.iType == BRANCH) handleBranch(pc,eInst.nextPc!=pc+4,eInst.nextPc,dInst.brFunc)
+
     document.getElementById("execute").innerHTML = "Decode: "
     document.getElementById("execute").innerHTML += JSON.stringify(dInst)
     document.getElementById("execute").innerHTML += "\n\nExecute: "
     document.getElementById("execute").innerHTML += JSON.stringify(eInst)
 
-    if (eInst.iType == LOAD)
+    if (eInst.iType == LOAD) {
         eInst.data = getLoadData(dMem[eInst.addr & (~0x3)], eInst.addr & 0x3, dInst.memFunc)
-    if (eInst.data == undefined) { eInst.data = 0 }
+        handleMem(eInst.addr & (~0x3), 0, 0, "d")
 
-    else if (eInst.iType == STORE) {
+        if (eInst.data == undefined) { eInst.data = 0 }
 
-        dMem[eInst.addr] = getStoreData(dMem[eInst.addr], eInst.data, eInst.addr & (0x3), dInst.memFunc)
+    } else if (eInst.iType == STORE) {
+
+        dMem[eInst.addr& (~0x3)] = getStoreData(dMem[eInst.addr& (~0x3)], eInst.data, eInst.addr & (0x3), dInst.memFunc)
+        handleMem(eInst.addr & (~0x3), 1, dMem[eInst.addr& (~0x3)], "d")
         if (eInst.addr == 0xf000fff0) {
             res = String.fromCharCode(eInst.data);
             console.log("FROM PROCESSOR: ", res)
@@ -115,6 +123,7 @@ function updateMem(data) {
         }
     }
     dMem = iMem
+    cacheMM = dMem
     document.getElementById("memory").innerHTML = ""
     for (const [key, value] of Object.entries(dMem)) {
         document.getElementById("memory").innerHTML += (`0x${key.toString(16)}: 0x${value.toString(16)}`) + "\n";

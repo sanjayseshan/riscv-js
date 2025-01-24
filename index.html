@@ -42,17 +42,17 @@
         Console:
         <pre id="console" style="max-height:300px; overflow: scroll;"></pre>
         Register view:
-        <pre id="registers" style="height:300px; overflow: scroll;"></pre>
+        <pre id="registers" style="max-height:300px; overflow: scroll;"></pre>
         <b id="regupdate"></b><br>
 
         <br>
         Memory view:
-        <pre id="memory" style="height:300px; overflow: scroll;"></pre>
+        <pre id="memory" style="max-height:300px; overflow: scroll;"></pre>
         <b id="memupdate"></b>
 
         <br>
         <!-- <pre id="decode" style="height:80px; overflow: scroll;"></pre> -->
-        <pre id="execute" style="height:80px; overflow: scroll;"></pre>
+        <pre id="execute" style="max-height:80px; overflow: scroll;"></pre>
 
 
         <br><br>
@@ -272,6 +272,16 @@
         }
         window.getAsm = getAsm;
         window.Instruction = Instruction
+    </script>
+
+
+    <script>
+        function handleMem(addr, rw, data, type) {
+            // console.log("MEMREQ ",addr,rw,data,type)
+        }
+        function handleBranch(pc, taken, nextPc,brFunc) {
+            // console.log("BRANCH ",pc,taken,nextPc,brFunc)
+        }
     </script>
 
     <br>
