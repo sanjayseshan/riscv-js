@@ -130,7 +130,7 @@ function decode(inst) {
                     case 0b0000000: dInst.aluFunc = Srl; break;
                     case 0b0100000: dInst.aluFunc = Sra; break;
                     default: dInst.iType = Unsupported;
-                }
+                }break;
                 default: dInst.iType = Unsupported;
             }
 
