@@ -80,7 +80,7 @@ function Processor() {
     }
     document.getElementById("memory").innerHTML = ""
     for (const [key, value] of Object.entries(dMem)) {
-        document.getElementById("memory").innerHTML += (`0x${key.toString(16)}: 0x${value.toString(16)}`) + "\n";
+        document.getElementById("memory").innerHTML += (`0x${parseInt(key).toString(16)}: 0x${value.toString(16)}`) + "\n";
     }
 
     if (eInst.iType == Unsupported) {
