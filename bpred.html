@@ -56,7 +56,10 @@
         <br>
         Branch predictor stats:<br>
         <b id="branchpred"></b>
-
+        <br>Global BHT size: <input type="number" id="size" value="4096" class="form-control">
+        Local BHT size: <input type="number" id="size2" value="1024" class="form-control">
+        Tournament Selector size: <input type="number" id="size3" value="4096" class="form-control">
+        <input class="btn btn-warning" type="button" value="Update Branch Predictor" onclick="reset_branch()">
         <br><br>
         Testbench:
         <select class="form-control" id="test">
@@ -292,11 +295,11 @@
         total = 0
         correct_l = 0
         correct_t = 0
-
+       
         function reset_branch() {
-            size = 4096;
-            size2 = 1024;
-            size3 = 4096;
+            size = parseInt(document.getElementById('size').value);
+            size2 = parseInt(document.getElementById('size2').value);
+            size3 = parseInt(document.getElementById('size3').value);
             histtable = 0; //global hist 16b
             localhist = new Uint16Array(size2); // 12b*size2
             localpredtable = new Uint8Array(size2); //3b*size2
