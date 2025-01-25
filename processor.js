@@ -34,7 +34,7 @@ function Processor() {
 
     eInst = execute(dInst, rVal1, rVal2, pc);
 
-    if (eInst.iType == BRANCH) handleBranch(pc,eInst.nextPc!=pc+4,eInst.nextPc,dInst.brFunc)
+    if (eInst.iType == BRANCH || eInst.iType == JAL || eInst.iType == JALR) handleBranch(pc,eInst.nextPc!=pc+4,eInst.nextPc,dInst.brFunc)
 
     document.getElementById("execute").innerHTML = "Decode: "
     document.getElementById("execute").innerHTML += JSON.stringify(dInst)
