@@ -291,27 +291,27 @@
             let table = document.createElement('table');//iterate over every array(row) within tableArr
             table.insertRow();//Iterate over every index(cell) in each array(row)
             idx = table.rows[table.rows.length - 1].insertCell();//add text to the created cell element
-            idx.bgColor = "yellow"
+            idx.bgColor = "orange"
             idx.textContent = "";
             for (i=0;i<associativity;i++) {
                 idx = table.rows[table.rows.length - 1].insertCell();//add text to the created cell element
                 idx.textContent = "Way "+String(i);
-                idx.bgColor = "yellow"
+                idx.bgColor = "orange"
                 idx.colSpan = 2+(1<<logBlockSize);
             }
             table.insertRow();//Iterate over every index(cell) in each array(row)
             idx = table.rows[table.rows.length - 1].insertCell();//add text to the created cell element
             idx.textContent = "Index";
-            idx.bgColor = "yellow"
+            idx.bgColor = "orange"
             for (i=0;i<associativity;i++) {
                 idx = table.rows[table.rows.length - 1].insertCell();//add text to the created cell element
                 idx.textContent = "Validity";
-                idx.bgColor = "yellow"
+                idx.bgColor = "orange"
                 idx = table.rows[table.rows.length - 1].insertCell();//add text to the created cell element
                 idx.textContent = "Tag";
-                idx.bgColor = "yellow"
+                idx.bgColor = "orange"
                 idx = table.rows[table.rows.length - 1].insertCell();//add text to the created cell element
-                idx.bgColor = "yellow"
+                idx.bgColor = "orange"
                 idx.textContent = "Data"
                 idx.colSpan = (1<<logBlockSize);
             }
