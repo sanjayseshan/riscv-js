@@ -334,7 +334,7 @@
             }
             document.getElementById("memory").innerHTML = ""
             for (const [key, value] of Object.entries(cacheMM)) {
-                document.getElementById("memory").innerHTML += (`${parseInt(key).toString(16)}: 0x${value.toString(16)}`) + "\n";
+                document.getElementById("memory").innerHTML += (`0x${parseInt(key).toString(16)}: 0x${value.toString(16)}`) + "\n";
             }
             return table
         }
