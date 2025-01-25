@@ -322,7 +322,7 @@
                 for (j=0;j<tableArr[i].length;j++) {//While iterating over the index(cell)
                     //insert a cell into the table element
                     newCell = table.rows[table.rows.length - 1].insertCell();//add text to the created cell element
-                    newCell.textContent = (tableArr2[i][j]==0)?"Invalid":((tableArr[i][j]==1)?"Clean":"Dirty");
+                    newCell.textContent = (tableArr2[i][j]==0)?"Invalid":((tableArr2[i][j]==1)?"Clean":"Dirty");
                     newCell2 = table.rows[table.rows.length - 1].insertCell();//add text to the created cell element
                     newCell2.textContent = String(tableArr[i][j].toString(16));
 
