@@ -71,7 +71,7 @@ function Processor() {
     }
     document.getElementById("instr").innerHTML = "pc: " + pc.toString(16) + " -- " + getAsm(inst)
 
-    document.getElementById("registers").innerHTML = "pc: " + pc.toString(16) + "\n"
+    document.getElementById("registers").innerHTML = "pc: 0x" + pc.toString(16) + "\n"
 
     pc = eInst.nextPc;
 
