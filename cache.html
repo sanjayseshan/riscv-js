@@ -473,12 +473,14 @@
                         document.getElementById("cacheupdate").innerHTML="clean miss for addr "+(virtualAddr<<2).toString(16)+" at index "+index.toString(16)+" with LRU way "+maxLRUidx.toString()
                     } else {
                         console.log("miss dirty ", virtualAddr);
-                        document.getElementById("cacheupdate").innerHTML="dirty miss for addr "+(virtualAddr<<2).toString(16)+" at index "+index.toString(16)+" with LRU way "+maxLRUidx.toString()
                         updateAddr = (tag[index][maxLRUidx] << (logNumRows + logBlockSize) ) | (index << logBlockSize)
+                        document.getElementById("cacheupdate").innerHTML="dirty miss for addr "+(virtualAddr<<2).toString(16)+" at index "+index.toString(16)+" with LRU way "+maxLRUidx.toString()+" writeback to "+updateAddr.toString(16)
                         wbLineMainMem(updateAddr,dataArray[index][maxLRUidx])
                         dataArray[index][maxLRUidx] = getLineMainMem(origAddr)
                         if (!isRead) dataArray[index][maxLRUidx][block] = data
                     }
+                    if (!isRead) document.getElementById("cacheupdate").innerHTML+= ", write"
+                    else document.getElementById("cacheupdate").innerHTML+= ", read"
                     tag[index][maxLRUidx] = tag_new;
                     validBit[index][maxLRUidx] = (isRead) ? 1 : 2;
                 }
@@ -493,6 +495,8 @@
 
             table = createTable(tag,validBit,dataArray)
             document.getElementById("cache").innerHTML = "<table>"+table.innerHTML+"</table>" 
+
+            document.getElementById("cacheupdate").innerHTML += "<br>Read Hits: "+readHits.toString()+" Write Hits: "+writeHits.toString()+ " Read Reqs: "+readReqs.toString()+" Write Reqs: "+writeReqs.toString()
         }
     </script>
 
