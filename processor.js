@@ -51,11 +51,15 @@ function Processor() {
 
         dMem[eInst.addr& (~0x3)] = getStoreData(dMem[eInst.addr& (~0x3)], eInst.data, eInst.addr & (0x3), dInst.memFunc)
         handleMem(eInst.addr & (~0x3), 1, dMem[eInst.addr& (~0x3)], "d")
-        if (eInst.addr == 0xf000fff0) {
+        if (eInst.addr == 0xf000fff0 || eInst.addr == 0x40000000) {
             res = String.fromCharCode(eInst.data);
             console.log("FROM PROCESSOR: ", res)
             document.getElementById("console").innerHTML += res
-        } else if (eInst.addr == 0xf000fff8) {
+        } else if (eInst.addr == 0xf000fff4 || eInst.addr == 0x40000004) {
+            res = eInst.data.toString();
+            console.log("FROM PROCESSOR: ", res)
+            document.getElementById("console").innerHTML += res
+        } else if (eInst.addr == 0xf000fff8 || eInst.addr == 0x40001000) {
             console.log("Exited with code ", eInst.data)
             document.getElementById("console").innerHTML += "\n\nExited with code " + String(eInst.data)
             return -1
