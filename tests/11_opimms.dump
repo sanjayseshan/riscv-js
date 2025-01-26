@@ -8,7 +8,6 @@ Contents of section .text:
  0030 93a60380 13b70380 93a7f37f 13b8f37f  ................
  0040 93280500 13390500 9329f5ff 133af5ff  .(...9...)...:..
  0050 932a0580 133b0580 932bf57f 133cf57f  .*...;...+...<..
- 0060 b70501f0 938585ff 13060000 23a0c500  ............#...
 Contents of section .riscv.attributes:
  0000 41190000 00726973 63760001 0f000000  A....riscv......
  0010 05727633 32693270 3000               .rv32i2p0.      
@@ -40,7 +39,3 @@ Disassembly of section .text:
   54:	80053b13          	sltiu	x22,x10,-2048
   58:	7ff52b93          	slti	x23,x10,2047
   5c:	7ff53c13          	sltiu	x24,x10,2047
-  60:	f00105b7          	lui	x11,0xf0010
-  64:	ff858593          	addi	x11,x11,-8 # f000fff8 <start+0xf000fff8>
-  68:	00000613          	addi	x12,x0,0
-  6c:	00c5a023          	sw	x12,0(x11)

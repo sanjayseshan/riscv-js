@@ -2,7 +2,7 @@
 build/fullasmtests/bpred_ras.riscv:     file format elf32-littleriscv
 
 Contents of section .text:
- 0000 ef00c000 630c0e0a 6f00000a 93840000  ....c...o.......
+ 0000 ef00c000 63040e0a 6f00000a 93840000  ....c...o.......
  0010 130e2000 ef004001 130e7000 ef00c000  .. ...@...p.....
  0020 93800400 67800000 13890000 130e3000  ....g.........0.
  0030 ef004001 130e8000 ef00c000 93000900  ..@.............
@@ -12,13 +12,9 @@ Contents of section .text:
  0070 ef00c000 93000a00 67800000 938a0000  ........g.......
  0080 130e6000 ef004001 130eb000 ef00c000  ..`...@.........
  0090 93800a00 67800000 130e0000 67800000  ....g.......g...
- 00a0 631ec001 130e1000 b70501f0 938585ff  c...............
- 00b0 13060000 a3a0c500 6f00c001 130e0000  ........o.......
- 00c0 b70501f0 938585ff 13060000 23a0c500  ............#...
- 00d0 6f004000 37150040 2320c501 6f000000  o.@.7..@# ..o...
- 00e0 00000000 00000000 00000000 00000000  ................
- 00f0 00000000 00000000 00000000 00000000  ................
- 0100 00000000                             ....            
+ 00a0 6316c001 130e1000 6f00c000 130e0000  c.......o.......
+ 00b0 6f004000 37150040 2320c501 6f000000  o.@.7..@# ..o...
+ 00c0 00000000                             ....            
 Contents of section .riscv.attributes:
  0000 41190000 00726973 63760001 0f000000  A....riscv......
  0010 05727633 32693270 3000               .rv32i2p0.      
@@ -27,7 +23,7 @@ Disassembly of section .text:
 
 00000000 <_start>:
    0:	00c000ef          	jal	x1,c <f1>
-   4:	0a0e0c63          	beq	x28,x0,bc <pass>
+   4:	0a0e0463          	beq	x28,x0,ac <pass>
    8:	0a00006f          	jal	x0,a8 <fail>
 
 0000000c <f1>:
@@ -78,26 +74,19 @@ Disassembly of section .text:
 00000098 <f6>:
   98:	00000e13          	addi	x28,x0,0
   9c:	00008067          	jalr	x0,0(x1)
-  a0:	01c01e63          	bne	x0,x28,bc <pass>
+  a0:	01c01663          	bne	x0,x28,ac <pass>
   a4:	00100e13          	addi	x28,x0,1
 
 000000a8 <fail>:
-  a8:	f00105b7          	lui	x11,0xf0010
-  ac:	ff858593          	addi	x11,x11,-8 # f000fff8 <begin_signature+0xf000eff8>
-  b0:	00000613          	addi	x12,x0,0
-  b4:	00c5a0a3          	sw	x12,1(x11)
-  b8:	01c0006f          	jal	x0,d4 <exit>
+  a8:	00c0006f          	jal	x0,b4 <exit>
 
-000000bc <pass>:
-  bc:	00000e13          	addi	x28,x0,0
-  c0:	f00105b7          	lui	x11,0xf0010
-  c4:	ff858593          	addi	x11,x11,-8 # f000fff8 <begin_signature+0xf000eff8>
-  c8:	00000613          	addi	x12,x0,0
-  cc:	00c5a023          	sw	x12,0(x11)
-  d0:	0040006f          	jal	x0,d4 <exit>
+000000ac <pass>:
+  ac:	00000e13          	addi	x28,x0,0
+  b0:	0040006f          	jal	x0,b4 <exit>
 
-000000d4 <exit>:
-  d4:	40001537          	lui	x10,0x40001
-  d8:	01c52023          	sw	x28,0(x10) # 40001000 <begin_signature+0x40000000>
-  dc:	0000006f          	jal	x0,dc <exit+0x8>
+000000b4 <exit>:
+  b4:	40001537          	lui	x10,0x40001
+  b8:	01c52023          	sw	x28,0(x10) # 40001000 <begin_signature+0x40000000>
+  bc:	0000006f          	jal	x0,bc <exit+0x8>
+  c0:	0000                	.2byte	0x0
 	...

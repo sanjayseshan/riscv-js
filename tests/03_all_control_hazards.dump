@@ -1,0 +1,44 @@
+
+build/pipetests/03_all_control_hazards.riscv:     file format elf32-littleriscv
+
+Contents of section .text:
+ 0000 6f008000 731000c0 6f008000 731000c0  o...s...o...s...
+ 0010 6f008000 731000c0 6f008000 731000c0  o...s...o...s...
+ 0020 6f008000 731000c0 6f008000 731000c0  o...s...o...s...
+ 0030 6f008000 731000c0 731000c0           o...s...s...    
+Contents of section .riscv.attributes:
+ 0000 41190000 00726973 63760001 0f000000  A....riscv......
+ 0010 05727633 32693270 3000               .rv32i2p0.      
+
+Disassembly of section .text:
+
+00000000 <a-0x8>:
+   0:	0080006f          	jal	x0,8 <a>
+   4:	c0001073          	unimp
+
+00000008 <a>:
+   8:	0080006f          	jal	x0,10 <b>
+   c:	c0001073          	unimp
+
+00000010 <b>:
+  10:	0080006f          	jal	x0,18 <c>
+  14:	c0001073          	unimp
+
+00000018 <c>:
+  18:	0080006f          	jal	x0,20 <d>
+  1c:	c0001073          	unimp
+
+00000020 <d>:
+  20:	0080006f          	jal	x0,28 <e>
+  24:	c0001073          	unimp
+
+00000028 <e>:
+  28:	0080006f          	jal	x0,30 <f>
+  2c:	c0001073          	unimp
+
+00000030 <f>:
+  30:	0080006f          	jal	x0,38 <g>
+  34:	c0001073          	unimp
+
+00000038 <g>:
+  38:	c0001073          	unimp

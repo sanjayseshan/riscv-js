@@ -4,8 +4,7 @@ build/microtests/01_lui.riscv:     file format elf32-littleriscv
 Contents of section .text:
  0000 b7100000 37210000 b7310000 37420000  ....7!...1..7B..
  0010 b7f2ff7f 37030080 b7f3ffff 37040000  ....7.......7...
- 0020 731000c0 b70501f0 938585ff 13060000  s...............
- 0030 23a0c500                             #...            
+ 0020 731000c0                             s...            
 Contents of section .riscv.attributes:
  0000 41190000 00726973 63760001 0f000000  A....riscv......
  0010 05727633 32693270 3000               .rv32i2p0.      
@@ -22,7 +21,3 @@ Disassembly of section .text:
   18:	fffff3b7          	lui	x7,0xfffff
   1c:	00000437          	lui	x8,0x0
   20:	c0001073          	unimp
-  24:	f00105b7          	lui	x11,0xf0010
-  28:	ff858593          	addi	x11,x11,-8 # f000fff8 <start+0xf000fff8>
-  2c:	00000613          	addi	x12,x0,0
-  30:	00c5a023          	sw	x12,0(x11)

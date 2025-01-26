@@ -1,0 +1,20 @@
+
+build/microtests/07a_lhu.riscv:     file format elf32-littleriscv
+
+Contents of section .text:
+ 0000 97100000 93800000 03d10000 83d12000  .............. .
+ 0010 731000c0                             s...            
+Contents of section .data:
+ 1000 78f63412                             x.4.            
+Contents of section .riscv.attributes:
+ 0000 41190000 00726973 63760001 0f000000  A....riscv......
+ 0010 05727633 32693270 3000               .rv32i2p0.      
+
+Disassembly of section .text:
+
+00000000 <start>:
+   0:	00001097          	auipc	x1,0x1
+   4:	00008093          	addi	x1,x1,0 # 1000 <label>
+   8:	0000d103          	lhu	x2,0(x1)
+   c:	0020d183          	lhu	x3,2(x1)
+  10:	c0001073          	unimp

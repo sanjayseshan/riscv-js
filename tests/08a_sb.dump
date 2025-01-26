@@ -1,0 +1,20 @@
+
+build/microtests/08a_sb.riscv:     file format elf32-littleriscv
+
+Contents of section .text:
+ 0000 b7100000 13011002 23802000 13013004  ........#. ...0.
+ 0010 a3802000 83d10000 731000c0           .. .....s...    
+Contents of section .riscv.attributes:
+ 0000 41190000 00726973 63760001 0f000000  A....riscv......
+ 0010 05727633 32693270 3000               .rv32i2p0.      
+
+Disassembly of section .text:
+
+00000000 <start>:
+   0:	000010b7          	lui	x1,0x1
+   4:	02100113          	addi	x2,x0,33
+   8:	00208023          	sb	x2,0(x1) # 1000 <start+0x1000>
+   c:	04300113          	addi	x2,x0,67
+  10:	002080a3          	sb	x2,1(x1)
+  14:	0000d183          	lhu	x3,0(x1)
+  18:	c0001073          	unimp
