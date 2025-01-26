@@ -22,6 +22,8 @@ function toBinary(number, bits = 8) {
     }
 }
 
+
+
 function Processor() {
 
     inst = iMem[pc];
@@ -44,6 +46,8 @@ function Processor() {
     if (eInst.iType == LOAD) {
         eInst.data = getLoadData(dMem[eInst.addr & (~0x3)], eInst.addr & 0x3, dInst.memFunc)
         handleMem(eInst.addr & (~0x3), 0, 0, "d")
+
+        if (eInst.addr == 0xF000fff4) eInst.data = getIn()
 
         if (eInst.data == undefined) { eInst.data = 0 }
 

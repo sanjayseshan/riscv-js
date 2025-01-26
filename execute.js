@@ -17,6 +17,19 @@ function aluBr(a, b, brFunc) {
     return res;
 }
 
+function getIn() {
+    tmp = document.getElementById("inbuf").value
+    if (tmp == "") {
+        console.log("TO PROCESSOR ","",0)
+        return 0
+    }
+    c = tmp[0]
+    console.log("TO PROCESSOR ",c, c.charCodeAt(0))
+    document.getElementById("inbuf").value=document.getElementById("inbuf").value.substring(1)
+    return c.charCodeAt(0)
+}
+
+
 function execute(dInst, rVal1, rVal2, pc) {
 
     let imm = parseInt(toBinary(dInst.imm, bits = 32), 2)

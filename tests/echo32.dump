@@ -1,0 +1,174 @@
+
+build/echo32:     file format elf32-littleriscv
+
+
+Disassembly of section .text.init:
+
+00000000 <_start>:
+   0:	00000093          	li	ra,0
+   4:	00000113          	li	sp,0
+   8:	00000193          	li	gp,0
+   c:	00000213          	li	tp,0
+  10:	00000293          	li	t0,0
+  14:	00000313          	li	t1,0
+  18:	00000393          	li	t2,0
+  1c:	00000413          	li	s0,0
+  20:	00000493          	li	s1,0
+  24:	00000513          	li	a0,0
+  28:	00000593          	li	a1,0
+  2c:	00000613          	li	a2,0
+  30:	00000693          	li	a3,0
+  34:	00000713          	li	a4,0
+  38:	00000793          	li	a5,0
+  3c:	00000813          	li	a6,0
+  40:	00000893          	li	a7,0
+  44:	00000913          	li	s2,0
+  48:	00000993          	li	s3,0
+  4c:	00000a13          	li	s4,0
+  50:	00000a93          	li	s5,0
+  54:	00000b13          	li	s6,0
+  58:	00000b93          	li	s7,0
+  5c:	00000c13          	li	s8,0
+  60:	00000c93          	li	s9,0
+  64:	00000d13          	li	s10,0
+  68:	00000d93          	li	s11,0
+  6c:	00000e13          	li	t3,0
+  70:	00000e93          	li	t4,0
+  74:	00000f13          	li	t5,0
+  78:	00000f93          	li	t6,0
+  7c:	10000137          	lui	sp,0x10000
+  80:	ff010113          	add	sp,sp,-16 # ffffff0 <_end+0xfffdfe4>
+  84:	018010ef          	jal	109c <main>
+  88:	00000513          	li	a0,0
+  8c:	7d9000ef          	jal	1064 <exit>
+  90:	0000006f          	j	90 <_start+0x90>
+
+Disassembly of section .text:
+
+00001000 <getchar>:
+    1000:	ff010113          	add	sp,sp,-16
+    1004:	00812623          	sw	s0,12(sp)
+    1008:	01010413          	add	s0,sp,16
+    100c:	00001797          	auipc	a5,0x1
+    1010:	ff878793          	add	a5,a5,-8 # 2004 <GET_ADDR>
+    1014:	0007a783          	lw	a5,0(a5)
+    1018:	0007a783          	lw	a5,0(a5)
+    101c:	00078513          	mv	a0,a5
+    1020:	00c12403          	lw	s0,12(sp)
+    1024:	01010113          	add	sp,sp,16
+    1028:	00008067          	ret
+
+0000102c <putchar>:
+    102c:	fe010113          	add	sp,sp,-32
+    1030:	00812e23          	sw	s0,28(sp)
+    1034:	02010413          	add	s0,sp,32
+    1038:	fea42623          	sw	a0,-20(s0)
+    103c:	00001797          	auipc	a5,0x1
+    1040:	fc478793          	add	a5,a5,-60 # 2000 <PUT_ADDR>
+    1044:	0007a783          	lw	a5,0(a5)
+    1048:	fec42703          	lw	a4,-20(s0)
+    104c:	00e7a023          	sw	a4,0(a5)
+    1050:	fec42783          	lw	a5,-20(s0)
+    1054:	00078513          	mv	a0,a5
+    1058:	01c12403          	lw	s0,28(sp)
+    105c:	02010113          	add	sp,sp,32
+    1060:	00008067          	ret
+
+00001064 <exit>:
+    1064:	fe010113          	add	sp,sp,-32
+    1068:	00812e23          	sw	s0,28(sp)
+    106c:	02010413          	add	s0,sp,32
+    1070:	fea42623          	sw	a0,-20(s0)
+    1074:	00001797          	auipc	a5,0x1
+    1078:	f9478793          	add	a5,a5,-108 # 2008 <FINISH_ADDR>
+    107c:	0007a783          	lw	a5,0(a5)
+    1080:	fec42703          	lw	a4,-20(s0)
+    1084:	00e7a023          	sw	a4,0(a5)
+    1088:	fec42783          	lw	a5,-20(s0)
+    108c:	00078513          	mv	a0,a5
+    1090:	01c12403          	lw	s0,28(sp)
+    1094:	02010113          	add	sp,sp,32
+    1098:	00008067          	ret
+
+Disassembly of section .text.startup:
+
+0000109c <main>:
+    109c:	ff010113          	add	sp,sp,-16
+    10a0:	00812423          	sw	s0,8(sp)
+    10a4:	00912223          	sw	s1,4(sp)
+    10a8:	00112623          	sw	ra,12(sp)
+    10ac:	00000417          	auipc	s0,0x0
+    10b0:	04440413          	add	s0,s0,68 # 10f0 <main+0x54>
+    10b4:	00000497          	auipc	s1,0x0
+    10b8:	04a48493          	add	s1,s1,74 # 10fe <main+0x62>
+    10bc:	00044503          	lbu	a0,0(s0)
+    10c0:	00140413          	add	s0,s0,1
+    10c4:	f69ff0ef          	jal	102c <putchar>
+    10c8:	fe941ae3          	bne	s0,s1,10bc <main+0x20>
+    10cc:	f35ff0ef          	jal	1000 <getchar>
+    10d0:	0ff57793          	zext.b	a5,a0
+    10d4:	fe078ce3          	beqz	a5,10cc <main+0x30>
+    10d8:	00078513          	mv	a0,a5
+    10dc:	f51ff0ef          	jal	102c <putchar>
+    10e0:	f21ff0ef          	jal	1000 <getchar>
+    10e4:	0ff57793          	zext.b	a5,a0
+    10e8:	fe0782e3          	beqz	a5,10cc <main+0x30>
+    10ec:	fedff06f          	j	10d8 <main+0x3c>
+
+Disassembly of section .rodata.str1.4:
+
+000010f0 <.rodata.str1.4>:
+    10f0:	6548                	.2byte	0x6548
+    10f2:	6c6c                	.2byte	0x6c6c
+    10f4:	77202c6f          	jal	s8,3866 <_end+0x185a>
+    10f8:	646c726f          	jal	tp,c873e <_end+0xc6732>
+    10fc:	0a21                	.2byte	0xa21
+	...
+
+Disassembly of section .sdata:
+
+00002000 <PUT_ADDR>:
+    2000:	fff0                	.2byte	0xfff0
+    2002:	f000                	.2byte	0xf000
+
+00002004 <GET_ADDR>:
+    2004:	fff4                	.2byte	0xfff4
+    2006:	f000                	.2byte	0xf000
+
+00002008 <FINISH_ADDR>:
+    2008:	fff8                	.2byte	0xfff8
+    200a:	f000                	.2byte	0xf000
+
+Disassembly of section .comment:
+
+00000000 <.comment>:
+   0:	3a434347          	.4byte	0x3a434347
+   4:	2820                	.2byte	0x2820
+   6:	3231                	.2byte	0x3231
+   8:	322e                	.2byte	0x322e
+   a:	302e                	.2byte	0x302e
+   c:	312d                	.2byte	0x312d
+   e:	2b34                	.2byte	0x2b34
+  10:	3131                	.2byte	0x3131
+  12:	2931622b          	.4byte	0x2931622b
+  16:	3120                	.2byte	0x3120
+  18:	2e32                	.2byte	0x2e32
+  1a:	2e32                	.2byte	0x2e32
+  1c:	0030                	.2byte	0x30
+
+Disassembly of section .riscv.attributes:
+
+00000000 <.riscv.attributes>:
+   0:	1b41                	.2byte	0x1b41
+   2:	0000                	.2byte	0x0
+   4:	7200                	.2byte	0x7200
+   6:	7369                	.2byte	0x7369
+   8:	01007663          	bgeu	zero,a6,14 <_start+0x14>
+   c:	0011                	.2byte	0x11
+   e:	0000                	.2byte	0x0
+  10:	1004                	.2byte	0x1004
+  12:	7205                	.2byte	0x7205
+  14:	3376                	.2byte	0x3376
+  16:	6932                	.2byte	0x6932
+  18:	7032                	.2byte	0x7032
+  1a:	0031                	.2byte	0x31

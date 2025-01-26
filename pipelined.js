@@ -116,7 +116,9 @@ function Processor() {
         if (eInst.iType == LOAD) {
 
             data = getLoadData(dMem[eInst.addr & (~0x3)], eInst.addr & 0x3, dInst.memFunc)
+            if (eInst.addr == 0xF000fff4) data = getIn()
             dCacheData = Valid(data)
+
             handleMem(eInst.addr & (~0x3), 0, 0, "d")
             if (data == undefined) { dCacheData = Valid(0) }
         } else if (eInst.iType == STORE) {

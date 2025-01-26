@@ -32,11 +32,12 @@ function Processor() {
     rVal2 = rf[dInst.src2];
 
     eInst = execute(dInst, rVal1, rVal2, pc);
-    if (eInst.iType == LOAD)
+    if (eInst.iType == LOAD){
         eInst.data = getLoadData(dMem[eInst.addr & (~0x3)], eInst.addr & 0x3, dInst.memFunc)
-    if (eInst.data == undefined) { eInst.data = 0 }
+        if (eInst.addr == 0xF000fff4) eInst.data = getIn()
+        if (eInst.data == undefined) { eInst.data = 0 }
 
-    else if (eInst.iType == STORE) {
+    } else if (eInst.iType == STORE) {
 
         dMem[eInst.addr] = getStoreData(dMem[eInst.addr& (~0x3)], eInst.data, eInst.addr & (0x3), dInst.memFunc)
         if (eInst.addr == 0xf000fff0 || eInst.addr == 0x40000000) {
