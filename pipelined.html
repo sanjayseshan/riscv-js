@@ -5,7 +5,7 @@
     <script src="decode.js"></script>
     <script src="alu.js"></script>
     <script src="execute.js"></script>
-    <script src="processor_fast.js"></script>
+    <script src="pipelined.js"></script>
     <script src="mem.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 
@@ -34,13 +34,26 @@
     </script>
     <div id="header"></div><br>
     <section>
-        <h1>RISC-V.JS (Fast -- no debug)</h1>
+        <h1>RISC-V.JS -- 4 Stage Pipeline</h1>
     </section>
     <section>Implementation of RISC-V 32I ISA in JS!</section>
     <section>
         <b id="instr"></b><br><br>
         Console:
         <pre id="console" style="max-height:300px; overflow: scroll;"></pre>
+        Register view:
+        <pre id="registers" style="max-height:300px; overflow: scroll;"></pre>
+        <b id="regupdate"></b><br>
+
+        <br>
+        Memory view:
+        <pre id="memory" style="max-height:300px; overflow: scroll;"></pre>
+        <b id="memupdate"></b>
+
+        <br>
+        <!-- <pre id="decode" style="height:80px; overflow: scroll;"></pre> -->
+        <pre id="execute" style="max-height:160px; overflow: scroll;"></pre>
+
 
         <br><br>
         Testbench:
@@ -136,7 +149,7 @@
             onclick="interval = setInterval(runProcInt, 1000/parseInt(document.getElementById('speed').value))"
             value="Resume">
         <input class="btn btn-success " type="button" onclick="clearInterval(interval);Processor()" value="Step">
-        <br><br>Max Speed (kHz): <input class="form-control" type="number" value="200" id="speed"
+        <br><br>Max Speed (Hz): <input class="form-control" type="number" value="200" id="speed"
             onchange="clearInterval(interval);interval = setInterval(runProcInt, 1000/parseInt(document.getElementById('speed').value))">
         <br><br>
         Upload custom hex: <input type="file" class="form-control" id="fileInput" accept=".vmh,.hex">
@@ -160,7 +173,6 @@
                     alert("error on line "+String(i))
                     return
                 }
-
             }
             reset(document.getElementById("customhex").value)
         }
@@ -212,23 +224,18 @@
         }
 
         function runProcInt() {
-            for (i=0;i<1000;i++) {
-                x = Processor()
-                if (x==-1) break
-            }
+            x = Processor()
             // console.log("STATE",x)
             if (x == -1) clearInterval(interval)
         }
 
         function reset(program) {
             document.getElementById("console").innerHTML = ""
-            // document.getElementById("registers").innerHTML = ""
-            // document.getElementById("memory").innerHTML = ""
-
+            document.getElementById("registers").innerHTML = ""
+            document.getElementById("memory").innerHTML = ""
             if (interval) clearInterval(interval)
             pc = 0;
             cycles = 0;
-            document.getElementById("instr").innerHTML = "pc: " + pc.toString(16) 
 
             rf = new Int32Array(32);
             for (i = 0; i < 32; i++) rf[i] = 0
@@ -238,6 +245,13 @@
             updateMem(program)
             x = 0
             // while (x != -1) x=Processor() 
+            instrs = 0
+
+            fetchf2d = Invalid
+            dCachedata = Invalid
+            dCacheData = Invalid
+            d2e = Invalid
+            e2w = Invalid
 
         }
 
@@ -265,6 +279,16 @@
         }
         window.getAsm = getAsm;
         window.Instruction = Instruction
+    </script>
+
+
+    <script>
+        function handleMem(addr, rw, data, type) {
+            // console.log("MEMREQ ",addr,rw,data,type)
+        }
+        function handleBranch(pc, taken, nextPc,brFunc) {
+            // console.log("BRANCH ",pc,taken,nextPc,brFunc)
+        }
     </script>
 
     <br>
