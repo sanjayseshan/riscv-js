@@ -46,7 +46,7 @@ function decode(inst) {
     immB32 = signExtend(immB << 1, 13);
 
     immU = splice(inst, 31, 12);
-    immU32 = signExtend(immU << 12, 32);
+    immU32 = immU << 12//signExtend(immU << 12, 32);
 
     immI = splice(inst, 31, 20);
     immI32 = signExtend(immI, 12);

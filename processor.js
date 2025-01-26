@@ -1,7 +1,7 @@
 pc = 0;
 cycles = 0;
 
-rf = new Int32Array(32);
+rf = new Uint32Array(32);
 for (i = 0; i < 32; i++) rf[i] = 0
 iMem = {};
 dMem = {};
