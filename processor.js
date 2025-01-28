@@ -24,7 +24,7 @@ function toBinary(number, bits = 8) {
 
 
 
-function Processor() {
+function Processor(cache=false) {
 
     inst = iMem[pc];
     handleMem(pc, 0, 0, "i")
@@ -86,9 +86,11 @@ function Processor() {
     for (i = 0; i < rf.length; i++) {
         document.getElementById("registers").innerHTML += "x" + String(i) + ": 0x" + rf[i].toString(16) + "\n"
     }
-    document.getElementById("memory").innerHTML = ""
-    for (const [key, value] of Object.entries(dMem)) {
-        document.getElementById("memory").innerHTML += (`0x${parseInt(key).toString(16)}: 0x${value.toString(16)}`) + "\n";
+    if (!cache) {
+        document.getElementById("memory").innerHTML = ""
+        for (const [key, value] of Object.entries(dMem)) {
+            document.getElementById("memory").innerHTML += (`0x${parseInt(key).toString(16)}: 0x${value.toString(16)}`) + "\n";
+        }
     }
 
     if (eInst.iType == Unsupported) {
