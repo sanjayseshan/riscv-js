@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <link rel="stylesheet" type="text/css" href="css/codemirror.css" />
+    <link rel="stylesheet" type="text/css" href="css/dracula.css" />
+    <script type="text/javascript" src="js/codemirror.js"></script>
+    <script type="text/javascript" src="js/gas.js"></script>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+
+    <title>RISC-V.js</title>
+
+
+    <script>
+
+        function download(data, filename, type) {
+            var file = new Blob([data], {
+                type: type
+            });
+            if (window.navigator.msSaveOrOpenBlob) // IE10+
+                window.navigator.msSaveOrOpenBlob(file, filename);
+            else { // Others
+                var a = document.createElement("a"),
+                    url = URL.createObjectURL(file);
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                setTimeout(function () {
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(url);
+                }, 0);
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <script>
+        $(function () {
+            $("#topbar").load("topbar.html");
+        });
+    </script>
+    <div id="topbar"></div><br>
+
+    <script>
+        $(function () {
+            $("#header").load("header.html");
+        });
+    </script>
+    <div id="header"></div><br>
+    <section>
+        <h1>RISC-V.JS -- Assembler</h1>
+    </section>
+    <section>
+        <div>
+            <div >
+                <div >
+                    <p>Type the assembly code below and click <b>Build</b></p>
+                    <form>
+                        <div class="input-field">
+                            <textarea id="sourceCodeBox">.global _boot
+.text
+
+_boot:                    /* x0  = 0    0x000 */
+    /* Test ADDI */
+    addi x1 , x0,   1000  /* x1  = 1000 0x3E8 */
+    addi x2 , x1,   2000  /* x2  = 3000 0xBB8 */
+    addi x3 , x2,  -1000  /* x3  = 2000 0x7D0 */
+    addi x4 , x3,  -2000  /* x4  = 0    0x000 */
+    addi x5 , x4,   1000  /* x5  = 1000 0x3E8 */
+
+    la x6, variable
+    addi x6, x6, 4
+
+.data
+variable:
+	.word 0xdeadbeef
+                    </textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="col s6">
+                    <!-- <p>Linker Script</b></p> -->
+                    <form>
+                        <div class="input-field">
+                            <textarea style="display:none" id="linkerCodeBox">
+OUTPUT_ARCH( "riscv" )
+ENTRY( _start)
+
+SECTIONS
+{
+    . = 0x0;
+    .text.init : { *(.text.init) }
+    . = ALIGN(0x1000);
+    .text : { *(.text) }
+    . = ALIGN(0x1000);
+    .data : { *(.data) }
+    .bss : { *(.bss) }
+    _end = .;
+}
+                        </textarea>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <button href="#" class="btn btn-success"
+                onClick="buildStuff(window.editor.getValue(), document.getElementById('linkerCodeBox').value)">Build</button>
+            <!-- <div class="container" id="building">
+                <!-- <p>Please wait while building</p> 
+                <div class="progress">
+                    <div class="indeterminate"></div>
+                </div>
+            </div> -->
+            <pre class="code code-res"><label>Console</label> <code id="output">Waiting for build</code></pre>
+            <div class="divider"></div>
+            <p>
+            <p>Hex Dump</p>
+            <pre style="max-height:300px; overflow: scroll;" class="code code-res"><code id="binaryBox">Waiting for build</code></pre>
+
+            <button class="btn btn-success"
+                onclick="download(document.getElementById('binaryBox').innerHTML,'program.hex','plain/text')">Download</button><br><br>
+
+
+            <!-- <pre class="code code-res"><label>Data<BR/>Hex Dump</label><code id="binaryDataBox">Waiting for build</code></pre> -->
+            <div class="divider"></div>
+            <label>Objdump Code Disassembly</label>
+            <pre style="max-height:300px; overflow: scroll;" class="code code-res"><code id="objDumpBox">Waiting for build</code></pre>
+            <button class="btn btn-success"
+                onclick="download(document.getElementById('objDumpBox').innerHTML,'program.dump','plain/text')">Download</button>
+
+            <!-- <div class="divider"></div> -->
+
+            <!-- <pre class="code code-res"><label>Objdump<BR/>Full Hex</label><code id="objDumpFullBox">Waiting for build</code></pre> -->
+            <!-- <div class="divider"></div> -->
+            </p>
+        </div>
+
+        See <a href="https://luplab.gitlab.io/rvcodecjs/">rvcodecjs</a> for a per-instruction breakdown of the bits. Copy in any raw assembly instruction from the objdump or hex value from the hex dump.
+    </section>
+
+
+    <!--JavaScript at end of body for optimized loading-->
+    <script data-main="js/app" src="js/require.js" async></script>
+    <script type="text/javascript" src="js/materialize.min.js" async></script>
+    <!-- <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js"
+        integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI=" crossorigin="anonymous"></script> -->
+    <link rel="preload" href="js/as-new.wasm" as="script" crossorigin="anonymous">
+    <link rel="preload" href="js/objcopy.wasm" as="script" crossorigin="anonymous">
+    <link rel="preload" href="js/objdump.wasm" as="script" crossorigin="anonymous">
+    <link rel="preload" href="js/ld-new.wasm" as="script" crossorigin="anonymous">
+    <link rel="preload" href="elf2hex/elf2hex.wasm" as="script" crossorigin="anonymous">
+    <script>
+        $(document).ready(() => {
+            $('i[rel="pre"]').replaceWith(function () {
+                return $('<pre><code>' + $(this).html() + '</code></pre>');
+            });
+            var pres = document.querySelectorAll('pre,kbd,blockquote');
+            for (var i = 0; i < pres.length; i++) {
+                pres[i].addEventListener("dblclick", function () {
+                    var selection = getSelection();
+                    var range = document.createRange();
+                    range.selectNodeContents(this);
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                }, false);
+            }
+            $('#loading').hide();
+            $('#content').show();
+            window.editor = CodeMirror.fromTextArea(document.getElementById('sourceCodeBox'), {
+                lineNumbers: true,
+                theme: "dracula",
+                mode: { name: "gas", architecture: "riscv" },
+            });
+            // window.ldeditor = CodeMirror.fromTextArea(document.getElementById('linkerCodeBox'), {
+            //     lineNumbers: true,
+            //     theme:"dracula",
+            //     mode: {name: "gas", architecture: "riscv"},
+            // });
+        })
+    </script>
+
+    <br>
+    <script>
+        $(function () {
+            $("#footer").load("footer.html");
+        });
+    </script>
+    <div id="footer"></div>
+    <!-- <script async type="text/javascript" src="elf2hex/elf2hex.js"></script> -->
+
+
+</body>
+
+</html>
