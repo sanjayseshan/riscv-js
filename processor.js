@@ -24,9 +24,23 @@ function toBinary(number, bits = 8) {
 
 
 
+consoleBuffer = "";
+
+function flushConsole() {
+    if (consoleBuffer.length > 0) {
+        document.getElementById("console").innerHTML += consoleBuffer;
+        consoleBuffer = "";
+    }
+}
+
 function Processor(cache=false) {
 
     inst = iMem[pc];
+    if (inst === undefined) {
+        flushConsole();
+        document.getElementById("console").innerHTML += "\n\nPC out of bounds: 0x" + pc.toString(16);
+        return -1;
+    }
     handleMem(pc, 0, 0, "i")
 
     console.log("PC ", pc.toString(16))
@@ -44,26 +58,26 @@ function Processor(cache=false) {
     document.getElementById("execute").innerHTML += JSON.stringify(eInst)
 
     if (eInst.iType == LOAD) {
-        eInst.data = getLoadData(dMem[eInst.addr & (~0x3)], eInst.addr & 0x3, dInst.memFunc)
-        handleMem(eInst.addr & (~0x3), 0, 0, "d")
+        let wordAddr = (eInst.addr & ~0x3) >>> 0;
+        eInst.data = getLoadData(dMem[wordAddr], eInst.addr & 0x3, dInst.memFunc)
+        handleMem(wordAddr, 0, 0, "d")
 
         if (eInst.addr == 0xF000fff4) eInst.data = getIn()
 
         if (eInst.data == undefined) { eInst.data = 0 }
 
     } else if (eInst.iType == STORE) {
-
-        dMem[eInst.addr& (~0x3)] = getStoreData(dMem[eInst.addr& (~0x3)], eInst.data, eInst.addr & (0x3), dInst.memFunc)
-        handleMem(eInst.addr & (~0x3), 1, dMem[eInst.addr& (~0x3)], "d")
+        let wordAddr = (eInst.addr & ~0x3) >>> 0;
+        dMem[wordAddr] = getStoreData(dMem[wordAddr], eInst.data, eInst.addr & 0x3, dInst.memFunc)
+        handleMem(wordAddr, 1, dMem[wordAddr], "d")
         if (eInst.addr == 0xf000fff0 || eInst.addr == 0x40000000) {
-            res = String.fromCharCode(eInst.data);
-            console.log("FROM PROCESSOR: ", res)
-            document.getElementById("console").innerHTML += res
+            consoleBuffer += String.fromCharCode(eInst.data);
+            if (consoleBuffer.length >= 256) flushConsole();
         } else if (eInst.addr == 0xf000fff4 || eInst.addr == 0x40000004) {
-            res = eInst.data.toString();
-            console.log("FROM PROCESSOR: ", res)
-            document.getElementById("console").innerHTML += res
+            consoleBuffer += eInst.data.toString();
+            if (consoleBuffer.length >= 256) flushConsole();
         } else if (eInst.addr == 0xf000fff8 || eInst.addr == 0x40001000) {
+            flushConsole();
             console.log("Exited with code ", eInst.data)
             document.getElementById("console").innerHTML += "\n\nExited with code " + String(eInst.data)
             return -1
@@ -73,7 +87,7 @@ function Processor(cache=false) {
     }
     if (isValid(eInst.dst)) {
         if (eInst.dst.data != 0) {
-            rf[eInst.dst.data] = parseInt(toBinary(eInst.data, bits = 32), 2)
+            rf[eInst.dst.data] = eInst.data >>> 0;
             document.getElementById("regupdate").innerHTML = "Updating REGISTER x" + String(eInst.dst.data) + " with 0x" + rf[eInst.dst.data].toString(16)
         }
     }
@@ -94,6 +108,7 @@ function Processor(cache=false) {
     }
 
     if (eInst.iType == Unsupported) {
+        flushConsole();
         document.getElementById("console").innerHTML += "\n\nReached unsupported instruction...Quitting at pc=0x" + pc.toString(16)
         console.log("Reached unsupported instruction (0x%x)", inst);
         console.log("Dumping the state of the processor");
@@ -103,8 +118,9 @@ function Processor(cache=false) {
         return -1
     }
 
-    cycles <= cycles + 1;
+    cycles++;
     if (cycles >= 2000000000) {
+        flushConsole();
         document.getElementById("console").innerHTML += "\n\nInfinite loop detected or cycle count exceeded...Quitting at pc=" + String(pc)
         console.log("Dumping the state of the processor");
         console.log("pc = 0x%x (Infinite loop detected)", pc);
@@ -114,29 +130,45 @@ function Processor(cache=false) {
         return -1
     }
 
+    flushConsole();
     return 0
 
 }
 function updateMem(data) {
-    pointer = 0
-    imem_split = data.split("\n")
-    for (i = 0; i < imem_split.length; i++) {
-        line = imem_split[i]
-        if (line[0] == "@") {
-            pointer = parseInt("0x" + line.split("@")[1]) << 2
-        } else {
-            data = parseInt("0x" + line)
-            if (isNaN(data)) continue
-            console.log(pointer, data)
-            iMem[pointer] = data
-            pointer += 4
+    let pointer = 0;
+    let len = data.length;
+    let lineStart = 0;
+
+    for (let i = 0; i <= len; i++) {
+        let ch = i < len ? data.charCodeAt(i) : 10;
+        if (ch === 10 || ch === 13) {
+            if (i > lineStart) {
+                let firstChar = data.charCodeAt(lineStart);
+                if (firstChar === 64 /* '@' */) {
+                    let hexStr = data.substring(lineStart + 1, i).trim();
+                    if (hexStr.length > 0) {
+                        pointer = (parseInt(hexStr, 16) << 2) >>> 0;
+                    }
+                } else {
+                    let valStr = data.substring(lineStart, i).trim();
+                    if (valStr.length > 0) {
+                        let val = parseInt(valStr, 16);
+                        if (!isNaN(val)) {
+                            if (val !== 0) {
+                                iMem[pointer] = val >>> 0;
+                            }
+                            pointer = (pointer + 4) >>> 0;
+                        }
+                    }
+                }
+            }
+            lineStart = i + 1;
         }
     }
-    dMem = iMem
-    cacheMM = dMem
-    document.getElementById("memory").innerHTML = ""
+    dMem = iMem;
+    cacheMM = dMem;
+    document.getElementById("memory").innerHTML = "";
     for (const [key, value] of Object.entries(dMem)) {
         document.getElementById("memory").innerHTML += (`0x${parseInt(key).toString(16)}: 0x${value.toString(16)}`) + "\n";
     }
-
 }
