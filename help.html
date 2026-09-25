@@ -38,23 +38,33 @@
     </section>
     <section>Implementation of RISC-V 32I ISA in JS!</section>
     <section>
-       <p>How do I create my own tests? For making C tests, see <a href="https://github.com/6192-sp24/lab2_b/tree/main?tab=readme-ov-file#how-does-testing-work">here</a>, <a href="https://github.com/6192-sp24/lab2_b/tree/main/test">here</a>, and <a href="https://github.com/6192-sp24/lab2_b/tree/main/elf2hex">here</a>. To make assembly tests, see <a href="https://github.com/6192-sp24/risc_v_tests">here</a>. Prereq install instructions can be found <a href="https://github.com/6192-sp24/lab4_a?tab=readme-ov-file#write-a-baremetal-multicore-consumer-producer-software-queue-a-software-ring-buffer">here</a>.</p>
+        <p>How do I create my own tests? For making C tests, see <a
+                href="https://github.com/6192-sp24/lab2_b/tree/main?tab=readme-ov-file#how-does-testing-work">here</a>,
+            <a href="https://github.com/6192-sp24/lab2_b/tree/main/test">here</a>, and <a
+                href="https://github.com/6192-sp24/lab2_b/tree/main/elf2hex">here</a>. To make assembly tests, see <a
+                href="https://github.com/6192-sp24/risc_v_tests">here</a>. Prereq install instructions can be found <a
+                href="https://github.com/6192-sp24/lab4_a?tab=readme-ov-file#write-a-baremetal-multicore-consumer-producer-software-queue-a-software-ring-buffer">here</a>.
+        </p>
 
-       <p>This code is built to support MIT 6.004 and 6.175 tests and should implement the full RV32I ISA but there may still be bugs. It is pretty extensible and built in pure JS.</p>
-       <p>Source code <a href="https://github.com/sanjayseshan/riscv-js">here</a>.</p>
+        <p>This code is built to support MIT 6.004 and 6.175 tests and should implement the full RV32I ISA but there may
+            still be bugs. It is pretty extensible and built in pure JS.</p>
+        <p>Source code <a href="https://github.com/sanjayseshan/riscv-js">here</a>.</p>
 
-       <p>
-        Can it run Linux? No, Linux needs at least an MMU and probably riscv64.
-        <br><br>
-        Can I run C programs? Yes, see above 
-        <br><br>
-        How fast is it? The maximum speed is in the hundreds of kHz
-        <!-- <br><br>
+        <p>
+            Can it run Linux? Yes and no, Linux needs at least at least risc-v 32ima (this is risc-v 32i). However, we
+            can emulate
+            that in software (see <a href="https://github.com/sanjayseshan/mini-rv32ima-baremetal">here</a>).
+            <br><br>
+            Can I run C programs? Yes, see above
+            <br><br>
+            How fast is it? The maximum speed is in the hundreds of kHz
+            <!-- <br><br>
         Can I read input? The MMIO does not support input quite yet -->
-       </p>
-       <p>Runs on recent versions of Chrome or Firefox. Tested mainly on Firefox.</p>
+        </p>
+        <p>Runs on recent versions of Chrome or Firefox. Tested mainly on Firefox.</p>
 
-       <p>Credits: LupLab @ UC Davis and <a href="http://riscvasm.lucasteske.dev">riscvasm.lucasteske.dev</a> for assembler and disassembler.</p>
+        <p>Credits: LupLab @ UC Davis and <a href="http://riscvasm.lucasteske.dev">riscvasm.lucasteske.dev</a> for
+            assembler and disassembler.</p>
 
     </section>
     <script>
@@ -66,7 +76,7 @@
                     inst = new Instruction.Instruction(lines[i])
                     document.getElementById("customhex").value += parseInt(inst.bin, 2).toString(16) + "\n"
                 } catch {
-                    alert("error on line "+String(i))
+                    alert("error on line " + String(i))
                     return
                 }
             }

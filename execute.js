@@ -30,30 +30,39 @@ function getIn() {
 }
 
 
-function execute(dInst, rVal1, rVal2, pc) {
+var _eInst = { iType: 0, dst: null, data: 0, addr: 0, nextPc: 0, memFunc: 0 };
 
-    let imm = parseInt(toBinary(dInst.imm, bits = 32), 2)
+function execute(dInst, rVal1, rVal2, pc) {
+    let imm = dInst.imm;
 
     let brFunc = dInst.brFunc;
     let aluFunc = dInst.aluFunc;
     let aluVal2 = dInst.iType == OPIMM ? imm : rVal2;
+    let data = 0;
+    let nextPc = (pc + 4) >>> 0;
 
     switch (dInst.iType) {
-        case AUIPC: data = pc + imm; break;
-        case LUI: data = imm; break;
-        case OP: data = alu(rVal1, aluVal2, aluFunc); break;
-        case OPIMM: data = alu(rVal1, aluVal2, aluFunc); break;
-        case JALR: data = pc + 4; break;
-        case JAL: data = pc + 4; break;
-        case STORE: data = rVal2; break;
+        case AUIPC: data = (pc + imm) >>> 0; break;
+        case LUI: data = imm >>> 0; break;
+        case OP: data = alu(rVal1, aluVal2, aluFunc) >>> 0; break;
+        case OPIMM: data = alu(rVal1, aluVal2, aluFunc) >>> 0; break;
+        case JALR: data = (pc + 4) >>> 0; break;
+        case JAL: data = (pc + 4) >>> 0; break;
+        case STORE: data = rVal2 >>> 0; break;
         default: data = 0;
     }
     switch (dInst.iType) {
-        case BRANCH: nextPc = (aluBr(rVal1, rVal2, brFunc)) ? pc + imm : pc + 4; break;
-        case JAL: nextPc = pc + imm; break;
-        case JALR: nextPc = (rVal1 + imm) & ~1; break;
-        default: nextPc = pc + 4; break;
+        case BRANCH: nextPc = (aluBr(rVal1, rVal2, brFunc)) ? ((pc + imm) >>> 0) : ((pc + 4) >>> 0); break;
+        case JAL: nextPc = (pc + imm) >>> 0; break;
+        case JALR: nextPc = ((rVal1 + imm) & ~1) >>> 0; break;
+        default: nextPc = (pc + 4) >>> 0; break;
     }
-    addr = rVal1 + imm;
-    return { iType: dInst.iType, dst: dInst.dst, data: parseInt(toBinary(data & 0xffffffff, bits = 32), 2), addr: parseInt(toBinary(addr & 0xffffffff, bits = 32), 2), nextPc: nextPc & 0xffffffff, memFunc: dInst.memFunc };
+    let addr = (rVal1 + imm) >>> 0;
+    _eInst.iType = dInst.iType;
+    _eInst.dst = dInst.dst;
+    _eInst.data = data;
+    _eInst.addr = addr;
+    _eInst.nextPc = nextPc;
+    _eInst.memFunc = dInst.memFunc;
+    return _eInst;
 }

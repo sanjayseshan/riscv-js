@@ -1,13 +1,8 @@
 function lt32(a, b, isSigned) {
-    ret = 0;
-
-    mask = ~(1 << 31);
-    maska = (splice(a, 31, 31) << 31);
-    maskb = (splice(b, 31, 31) << 31);
-    a = (isSigned == 1) ? (a & mask) | maska : a;
-    b = (isSigned == 1) ? (b & mask) | maskb : b;
-    ret = a < b;
-    return ret;
+    if (isSigned) {
+        return (a | 0) < (b | 0);
+    }
+    return (a >>> 0) < (b >>> 0);
 }
 
 function alu(a, b, func) {
@@ -38,60 +33,33 @@ function truncate(x) {
     return x
 }
 function getLoadData(word, byteOffset, op) {
-
-    ret = 0;
+    if (word === undefined) word = 0;
+    let ret = 0;
     if (op == Lw) ret = word;
     else if (op == Lb || op == Lbu) {
-        tmp = 0;
-        if (byteOffset == 0)
-            tmp = truncate(word & 0xff);
-        else if (byteOffset == 1)
-            tmp = truncate((word & 0xff00) >> 8);
-        else if (byteOffset == 2)
-            tmp = truncate((word & 0xff0000) >> 16);
-        else if (byteOffset == 3)
-            tmp = truncate((word & 0xff000000) >> 24);
-        ret = (op == Lb) ? signExtend(tmp, 8) : zeroExtend(tmp);
+        let tmp = (word >>> (byteOffset * 8)) & 0xff;
+        ret = (op == Lb) ? signExtend(tmp, 8) : tmp;
     } else if (op == Lh || op == Lhu) {
-        tmp = 0;
-
-        if (byteOffset == 0)
-            tmp = truncate(word & 0xffff);
-        else if (byteOffset == 2)
-            tmp = truncate((word & 0xffff0000) >> 16);
-        ret = (op == Lh) ? signExtend(tmp, 16) : zeroExtend(tmp);
+        let tmp = (word >>> (byteOffset * 8)) & 0xffff;
+        ret = (op == Lh) ? signExtend(tmp, 16) : tmp;
     }
     return ret;
 }
 
 function getStoreData(currentData, newData, byteOffset, op) {
-    ret = currentData;
+    if (currentData === undefined) currentData = 0;
+    let ret = currentData;
 
-
-    if (op == Sw) ret = newData;
-    else if (op == Sb) {
-        if (byteOffset == 0) {
-            ret = ret & (~0xff)
-            ret = ret | (newData & 0xff);
-        } else if (byteOffset == 1) {
-            ret = ret & (~0xff00)
-            ret = ret | (newData & 0xff);
-        } else if (byteOffset == 2) {
-            ret = ret & (~0xff0000)
-            ret = ret | (newData & 0xff);
-        } else if (byteOffset == 3) {
-            ret = ret & (~0xff000000)
-            ret = ret | (newData & 0xff);
-        } else if (op == Sh) {
-            if (byteOffset == 0) {
-                ret = ret & (~0xffff)
-                ret = ret | (newData & 0xffff);
-            } else if (byteOffset == 2) {
-
-                ret = ret & (~0xffff0000)
-                ret = ret | (newData & 0xffff);
-            }
-        }
+    if (op == Sw) {
+        ret = newData;
+    } else if (op == Sb) {
+        let shift = byteOffset * 8;
+        let mask = ~(0xff << shift);
+        ret = (currentData & mask) | ((newData & 0xff) << shift);
+    } else if (op == Sh) {
+        let shift = byteOffset * 8;
+        let mask = ~(0xffff << shift);
+        ret = (currentData & mask) | ((newData & 0xffff) << shift);
     }
-    return ret;
+    return ret >>> 0;
 }

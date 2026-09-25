@@ -165,14 +165,18 @@
         <br><br>
         <input class="btn btn-success " type="button" onclick="runProcessor()" value="Run!">
 
-        <!-- <input class="btn btn-danger" type="button" onclick="reset(getTest())" value="Reset"> -->
-        <input class="btn btn-warning" type="button" onclick="clearInterval(interval)" value="Pause">
-        <input class="btn btn-success " type="button"
-            onclick="interval = setInterval(runProcInt, 1000/parseInt(document.getElementById('speed').value))"
-            value="Resume">
-        <input class="btn btn-success " type="button" onclick="clearInterval(interval);Processor()" value="Step">
-        <br><br>Max Speed (kHz): <input class="form-control" type="number" value="200" id="speed"
-            onchange="clearInterval(interval);interval = setInterval(runProcInt, 1000/parseInt(document.getElementById('speed').value))">
+        <input class="btn btn-warning" type="button" onclick="isRunning = false; clearInterval(interval); flushConsole(); if(iMem[pc]!==undefined) document.getElementById('instr').innerHTML='pc: 0x'+pc.toString(16)+' -- '+getAsm(iMem[pc]);" value="Pause">
+        <input class="btn btn-success " type="button" onclick="runProcessor()" value="Resume">
+        <input class="btn btn-success " type="button" onclick="isRunning = false; clearInterval(interval); Processor(); flushConsole(); if(iMem[pc]!==undefined) document.getElementById('instr').innerHTML='pc: 0x'+pc.toString(16)+' -- '+getAsm(iMem[pc]);" value="Step">
+        <br><br>Target Speed: 
+        <select class="form-control" id="speed" onchange="if(interval){ clearInterval(interval); runProcessor(); }">
+            <option value="max">Max (Uncapped / Turbo)</option>
+            <option value="5000">5 MHz (batch 100k @ 20ms)</option>
+            <option value="2000">2 MHz</option>
+            <option value="1000">1 MHz</option>
+            <option value="500">500 kHz</option>
+            <option value="200">200 kHz</option>
+        </select>
         <br><br>
         Upload custom hex: <input type="file" class="form-control" id="fileInput" accept=".vmh,.hex">
         <br><br>
@@ -205,21 +209,22 @@
 
         fileInputT.addEventListener('change', function (e) {
             var file = fileInputT.files[0];
-            var textType = /text.*/;
+            if (!file) return;
 
             var reader = new FileReader();
 
             reader.onload = function (e) {
                 data = reader.result;
-                reset(data)
-                document.getElementById("customhex").value = data
-                alert("Loaded custom file")
-
-
-            }
+                reset(data);
+                if (data.length > 500000) {
+                    document.getElementById("customhex").value = `[Loaded ${file.name} (${(file.size / (1024*1024)).toFixed(2)} MB) - Large file omitted from textarea for performance]`;
+                } else {
+                    document.getElementById("customhex").value = data;
+                }
+                alert("Loaded custom file: " + file.name);
+            };
 
             reader.readAsText(file);
-
         });
 
 
@@ -246,13 +251,31 @@
             return data
         }
 
+        var lastTimeRun = performance.now();
+        var lastCycles = 0;
+
         function runProcInt() {
-            for (i=0;i<1000;i++) {
-                x = Processor()
-                if (x==-1) break
+            let batch = 500000;
+            let x = 0;
+            for (let i = 0; i < batch; i++) {
+                x = Processor();
+                if (x === -1) break;
             }
-            // console.log("STATE",x)
-            if (x == -1) clearInterval(interval)
+            flushConsole();
+            let now = performance.now();
+            let elapsed = now - lastTimeRun;
+            if (elapsed >= 500) {
+                let mhz = (((cycles - lastCycles) / (elapsed * 1000))).toFixed(2);
+                document.getElementById("instr").innerHTML = `pc: 0x${pc.toString(16)} | cycles: ${cycles.toLocaleString()} | speed: ${mhz} MHz`;
+                lastTimeRun = now;
+                lastCycles = cycles;
+            }
+            if (x === -1) {
+                clearInterval(interval);
+                if (iMem[pc] !== undefined) {
+                    document.getElementById("instr").innerHTML = "pc: 0x" + pc.toString(16) + " -- " + getAsm(iMem[pc]);
+                }
+            }
         }
 
         function reset(program) {
@@ -276,10 +299,29 @@
 
         }
 
+        var isRunning = false;
+
+        function runLoop() {
+            if (!isRunning) return;
+            runProcInt();
+            if (isRunning) {
+                let spdVal = document.getElementById('speed').value;
+                if (spdVal === 'max') {
+                    // Maximum possible dispatch without setInterval 4ms clamp
+                    setTimeout(runLoop, 0);
+                } else {
+                    let delay = Math.max(1, Math.floor(1000 / (parseInt(spdVal) || 200)));
+                    setTimeout(runLoop, delay);
+                }
+            }
+        }
+
         function runProcessor() {
-            // reset(program)
-            interval = setInterval(runProcInt, 1000 / parseInt(document.getElementById('speed').value))
-            // x = ()
+            if (interval) clearInterval(interval);
+            isRunning = true;
+            lastTimeRun = performance.now();
+            lastCycles = cycles;
+            runLoop();
         }
 
     </script>
