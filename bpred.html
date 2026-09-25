@@ -43,7 +43,7 @@
         <pre id="console" style="max-height:300px; overflow: scroll;"></pre>
         Input buffer:
         <textarea id="inbuf" class="form-control" style="min-height: 75px !important;"></textarea>
-    Register view:
+        Register view:
         <pre id="registers" style="max-height:300px; overflow: scroll;"></pre>
         <b id="regupdate"></b><br>
 
@@ -67,110 +67,112 @@
         <select class="form-control" id="test">
             <option></option>
             <option>00a_unimp</option>
-<option>00b_unimp</option>
-<option>00c_unimp</option>
-<option>00d_unimp</option>
-<option>00e_unimp</option>
-<option>00f_unimp</option>
-<option>00g_unimp</option>
-<option>00h_unimp</option>
-<option>00i_unimp</option>
-<option>01_lui</option>
-<option>01_no_hazards</option>
-<option>02_addi</option>
-<option>02_all_data_hazards</option>
-<option>03_add</option>
-<option>03_all_control_hazards</option>
-<option>04_all_hazards</option>
-<option>04_bne</option>
-<option>05a_jal</option>
-<option>05b_jal</option>
-<option>06_auipc</option>
-<option>07a_lb</option>
-<option>07a_lh</option>
-<option>07a_lhu</option>
-<option>07a_lw</option>
-<option>07b_lb</option>
-<option>07b_lbu</option>
-<option>07b_lh</option>
-<option>07b_lhu</option>
-<option>07b_lw</option>
-<option>08a_sb</option>
-<option>08a_sh</option>
-<option>08a_sw</option>
-<option>08b_sb</option>
-<option>08b_sh</option>
-<option>08b_sw</option>
-<option>09a_jalr</option>
-<option>09b_jalr</option>
-<option>09c_jalr</option>
-<option>10a_ops</option>
-<option>10b_ops</option>
-<option>11_opimms</option>
-<option>12_branches</option>
-<option>add32</option>
-<option>addi</option>
-<option>add</option>
-<option>and32</option>
-<option>andi</option>
-<option>and</option>
-<option>auipc</option>
-<option>beq</option>
-<option>bge</option>
-<option>bgeu</option>
-<option>blt</option>
-<option>bltu</option>
-<option>bne</option>
-<option>bpred_bht</option>
-<option>bpred_j_noloop</option>
-<option>bpred_j</option>
-<option>bpred_ras</option>
-<option>cache</option>
-<option>hello32</option>
-<option>jal</option>
-<option>jalr</option>
-<option>j</option>
-<option>lb</option>
-<option>lbu</option>
-<option>lh</option>
-<option>lhu</option>
-<option>lui</option>
-<option>lw</option>
-<option>matmul32</option>
-<option>mnist_fast</option>
-<option>mnist_test10</option>
-<option>mnist_test1</option>
-<option>mnist_test20</option>
-<option>mnist_test5</option>
-<option>mul32</option>
-<option>mul32_test</option>
-<option>mul64_test</option>
-<option>or32</option>
-<option>ori</option>
-<option>or</option>
-<option>packmul_test</option>
-<option>quicksort</option>
-<option>reverse32</option>
-<option>sb</option>
-<option>sh</option>
-<option>simple</option>
-<option>slli</option>
-<option>sll</option>
-<option>slti</option>
-<option>slt</option>
-<option>srai</option>
-<option>sra</option>
-<option>srli</option>
-<option>srl</option>
-<option>sub32</option>
-<option>sub</option>
-<option>sw</option>
-<option>thelie32</option>
-<option>thuemorse32</option>
-<option>xor32</option>
-<option>xori</option>
-<option>xor</option>
-<option>echo32</option>
+            <option>00b_unimp</option>
+            <option>00c_unimp</option>
+            <option>00d_unimp</option>
+            <option>00e_unimp</option>
+            <option>00f_unimp</option>
+            <option>00g_unimp</option>
+            <option>00h_unimp</option>
+            <option>00i_unimp</option>
+            <option>01_lui</option>
+            <option>01_no_hazards</option>
+            <option>02_addi</option>
+            <option>02_all_data_hazards</option>
+            <option>03_add</option>
+            <option>03_all_control_hazards</option>
+            <option>04_all_hazards</option>
+            <option>04_bne</option>
+            <option>05a_jal</option>
+            <option>05b_jal</option>
+            <option>06_auipc</option>
+            <option>07a_lb</option>
+            <option>07a_lh</option>
+            <option>07a_lhu</option>
+            <option>07a_lw</option>
+            <option>07b_lb</option>
+            <option>07b_lbu</option>
+            <option>07b_lh</option>
+            <option>07b_lhu</option>
+            <option>07b_lw</option>
+            <option>08a_sb</option>
+            <option>08a_sh</option>
+            <option>08a_sw</option>
+            <option>08b_sb</option>
+            <option>08b_sh</option>
+            <option>08b_sw</option>
+            <option>09a_jalr</option>
+            <option>09b_jalr</option>
+            <option>09c_jalr</option>
+            <option>10a_ops</option>
+            <option>10b_ops</option>
+            <option>11_opimms</option>
+            <option>12_branches</option>
+            <option>add32</option>
+            <option>addi</option>
+            <option>add</option>
+            <option>and32</option>
+            <option>andi</option>
+            <option>and</option>
+            <option>auipc</option>
+            <option>beq</option>
+            <option>bge</option>
+            <option>bgeu</option>
+            <option>blt</option>
+            <option>bltu</option>
+            <option>bne</option>
+            <option>bpred_bht</option>
+            <option>bpred_j_noloop</option>
+            <option>bpred_j</option>
+            <option>bpred_ras</option>
+            <option>cache</option>
+            <option>hello32</option>
+            <option>jal</option>
+            <option>jalr</option>
+            <option>j</option>
+            <option>lb</option>
+            <option>lbu</option>
+            <option>lh</option>
+            <option>lhu</option>
+            <option>lui</option>
+            <option>lw</option>
+            <option>matmul32</option>
+            <option>mnist_fast</option>
+            <option>mnist_test10</option>
+            <option>mnist_test1</option>
+            <option>mnist_test20</option>
+            <option>mnist_test5</option>
+            <option>mul32</option>
+            <option>mul32_test</option>
+            <option>mul64_test</option>
+            <option>or32</option>
+            <option>ori</option>
+            <option>or</option>
+            <option>packmul_test</option>
+            <option>quicksort</option>
+            <option>reverse32</option>
+            <option>sb</option>
+            <option>sh</option>
+            <option>simple</option>
+            <option>slli</option>
+            <option>sll</option>
+            <option>slti</option>
+            <option>slt</option>
+            <option>srai</option>
+            <option>sra</option>
+            <option>srli</option>
+            <option>srl</option>
+            <option>sub32</option>
+            <option>sub</option>
+            <option>sw</option>
+            <option>thelie32</option>
+            <option>thuemorse32</option>
+            <option>xor32</option>
+            <option>xori</option>
+            <option>xor</option>
+            <option>echo32</option>
+            <option>mini-rv32ima-linux</option>
+            <option>mini-rv32ima-baremetal</option>
 
 
             <!-- <option value="0">thelie32</option>
@@ -208,7 +210,7 @@
                     inst = new Instruction.Instruction(lines[i])
                     document.getElementById("customhex").value += parseInt(inst.bin, 2).toString(16) + "\n"
                 } catch {
-                    alert("error on line "+String(i))
+                    alert("error on line " + String(i))
                     return
                 }
             }
@@ -323,12 +325,12 @@
         localpredtable = new Uint8Array(size2); //3b*size2
         predtable = new Uint8Array(size); //global hist table 2b*size,
         tournselector = new Uint8Array(size3); //2b*size3
-        
+
         correct_g = 0
         total = 0
         correct_l = 0
         correct_t = 0
-       
+
         function reset_branch() {
             size = parseInt(document.getElementById('size').value);
             size2 = parseInt(document.getElementById('size2').value);
@@ -343,57 +345,57 @@
             correct_t = 0
             total = 0
         }
-        function makePrediction(address){
-            index_glob = histtable^address;
-            index_raw = histtable^address;//(histtable&0xfff)|(address&0xff000);// ^ address; 
-            index_raw_local =  localhist[address%size2];
-            currPred =  ((predtable[(index_glob)%size])&0x2)>>1; 
-            currPredlocal =  ((localpredtable[(index_raw_local)%size2])&0x4)>>2;
+        function makePrediction(address) {
+            index_glob = histtable ^ address;
+            index_raw = histtable ^ address;//(histtable&0xfff)|(address&0xff000);// ^ address; 
+            index_raw_local = localhist[address % size2];
+            currPred = ((predtable[(index_glob) % size]) & 0x2) >> 1;
+            currPredlocal = ((localpredtable[(index_raw_local) % size2]) & 0x4) >> 2;
             tourn = 0
-            if (((tournselector[(index_raw)%size3]&0x2)>>1) == false) { 
-                tourn= currPred;
+            if (((tournselector[(index_raw) % size3] & 0x2) >> 1) == false) {
+                tourn = currPred;
             } else {
-                tourn= currPredlocal;
+                tourn = currPredlocal;
             }
-            return {global:currPred,local:currPredlocal,tournament:tourn}
+            return { global: currPred, local: currPredlocal, tournament: tourn }
         }
-        function makeUpdate(takenActually, takenPredicted, address){
-            index_glob = histtable^address;
-            index_raw = histtable^address;//(histtable&0xfff)|(address&0xff000);// ^ address; 
+        function makeUpdate(takenActually, takenPredicted, address) {
+            index_glob = histtable ^ address;
+            index_raw = histtable ^ address;//(histtable&0xfff)|(address&0xff000);// ^ address; 
             index_local = address % size2;
-            index_raw_local =  localhist[index_local];
+            index_raw_local = localhist[index_local];
             if (takenActually) {
-                if (predtable[(index_glob)%size] != 3)
-                    predtable[(index_glob)%size]++;
-                if (localpredtable[(index_raw_local)%size2] != 7)
-                     localpredtable[(index_raw_local)%size2]++;
+                if (predtable[(index_glob) % size] != 3)
+                    predtable[(index_glob) % size]++;
+                if (localpredtable[(index_raw_local) % size2] != 7)
+                    localpredtable[(index_raw_local) % size2]++;
             } else {
-                if (predtable[(index_glob)%size] != 0)
-                    predtable[(index_glob)%size]--;
-                if (localpredtable[(index_raw_local)%size2] != 0)
-                    localpredtable[(index_raw_local)%size2]--;
+                if (predtable[(index_glob) % size] != 0)
+                    predtable[(index_glob) % size]--;
+                if (localpredtable[(index_raw_local) % size2] != 0)
+                    localpredtable[(index_raw_local) % size2]--;
             }
-            histtable = (histtable<<1)|takenActually;
+            histtable = (histtable << 1) | takenActually;
             histtable = histtable & 0xffff;
-            localhist[index_local] = (localhist[index_local]<<1)|takenActually;
-            localhist[index_local] = (localhist[index_local])&(0xfff);
-            if ((tournselector[(index_raw)%size3]&0x2)>>1){
+            localhist[index_local] = (localhist[index_local] << 1) | takenActually;
+            localhist[index_local] = (localhist[index_local]) & (0xfff);
+            if ((tournselector[(index_raw) % size3] & 0x2) >> 1) {
                 if (takenActually == takenPredicted) {
-                    if (tournselector[(index_raw)%size3] != 3)
-                        tournselector[(index_raw)%size3]++;
+                    if (tournselector[(index_raw) % size3] != 3)
+                        tournselector[(index_raw) % size3]++;
                 } else {
-                    if (tournselector[(index_raw)%size3] != 0) {
-                        tournselector[(index_raw)%size3]--;
+                    if (tournselector[(index_raw) % size3] != 0) {
+                        tournselector[(index_raw) % size3]--;
                     }
                 }
             } else {
                 if (takenActually == takenPredicted) {
-                    if (tournselector[(index_raw)%size3] == 3)
-                        tournselector[(index_raw)%size3]--;
+                    if (tournselector[(index_raw) % size3] == 3)
+                        tournselector[(index_raw) % size3]--;
                 } else {
-                    if (tournselector[(index_raw)%size3] != 3) {
-                        tournselector[(index_raw)%size3]++;
-                    }   
+                    if (tournselector[(index_raw) % size3] != 3) {
+                        tournselector[(index_raw) % size3]++;
+                    }
                 }
 
             }
@@ -405,15 +407,15 @@
             // console.log("MEMREQ ",addr,rw,data,type)
         }
 
-        function handleBranch(pc, taken, nextPc,brFunc) {
+        function handleBranch(pc, taken, nextPc, brFunc) {
             total++
             // console.log("BRANCH ",pc,taken,nextPc,brFunc)
             res = makePrediction(pc)
             if (res.global == taken) correct_g++
             if (res.local == taken) correct_l++
             if (res.tournament == taken) correct_t++
-            document.getElementById("branchpred").innerHTML = "Global: "+correct_g.toString()+" Local: "+correct_l.toString()+" Tournament: "+correct_t.toString()+" Total: "+total.toString()
-            makeUpdate(taken,res.tournament,pc)
+            document.getElementById("branchpred").innerHTML = "Global: " + correct_g.toString() + " Local: " + correct_l.toString() + " Tournament: " + correct_t.toString() + " Total: " + total.toString()
+            makeUpdate(taken, res.tournament, pc)
         }
     </script>
 

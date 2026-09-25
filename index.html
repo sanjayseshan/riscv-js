@@ -166,6 +166,8 @@
             <option>xori</option>
             <option>xor</option>
             <option>echo32</option>
+            <option>mini-rv32ima-linux</option>
+            <option>mini-rv32ima-baremetal</option>
 
 
             <!-- <option value="0">thelie32</option>
@@ -203,7 +205,7 @@
                     inst = new Instruction.Instruction(lines[i])
                     document.getElementById("customhex").value += parseInt(inst.bin, 2).toString(16) + "\n"
                 } catch {
-                    alert("error on line "+String(i))
+                    alert("error on line " + String(i))
                     return
                 }
             }
@@ -312,7 +314,7 @@
         function handleMem(addr, rw, data, type) {
             // console.log("MEMREQ ",addr,rw,data,type)
         }
-        function handleBranch(pc, taken, nextPc,brFunc) {
+        function handleBranch(pc, taken, nextPc, brFunc) {
             // console.log("BRANCH ",pc,taken,nextPc,brFunc)
         }
     </script>

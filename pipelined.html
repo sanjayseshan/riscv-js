@@ -43,7 +43,7 @@
         <pre id="console" style="max-height:300px; overflow: scroll;"></pre>
         Input buffer:
         <textarea id="inbuf" class="form-control" style="min-height: 75px !important;"></textarea>
-  Register view:
+        Register view:
         <pre id="registers" style="max-height:300px; overflow: scroll;"></pre>
         <b id="regupdate"></b><br>
 
@@ -165,7 +165,9 @@
             <option>xor32</option>
             <option>xori</option>
             <option>xor</option>
-            <option>echo32</option>
+            <option>xor</option>
+            <option>mini-rv32ima-linux</option>
+            <option>mini-rv32ima-baremetal</option>
 
             <!-- <option value="0">thelie32</option>
             <option value="1">hello_test</option>
@@ -202,7 +204,7 @@
                     inst = new Instruction.Instruction(lines[i])
                     document.getElementById("customhex").value += parseInt(inst.bin, 2).toString(16) + "\n"
                 } catch {
-                    alert("error on line "+String(i))
+                    alert("error on line " + String(i))
                     return
                 }
             }
@@ -318,7 +320,7 @@
         function handleMem(addr, rw, data, type) {
             // console.log("MEMREQ ",addr,rw,data,type)
         }
-        function handleBranch(pc, taken, nextPc,brFunc) {
+        function handleBranch(pc, taken, nextPc, brFunc) {
             // console.log("BRANCH ",pc,taken,nextPc,brFunc)
         }
     </script>

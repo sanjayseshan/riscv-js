@@ -43,7 +43,7 @@
         <pre id="console" style="max-height:300px; overflow: scroll;"></pre>
         Input buffer:
         <textarea id="inbuf" class="form-control" style="min-height: 75px !important;"></textarea>
-   <!-- Formatted as HTML: -->
+        <!-- Formatted as HTML: -->
         <div id="console2" style="display: none;"></div>
 
         <br><br>
@@ -155,7 +155,9 @@
             <option>xori</option>
             <option>xor</option>
             <option>echo32</option>
-            
+            <option>mini-rv32ima-linux</option>
+            <option>mini-rv32ima-baremetal</option>
+
 
             <!-- <option value="0">thelie32</option>
             <option value="1">hello_test</option>
@@ -165,10 +167,14 @@
         <br><br>
         <input class="btn btn-success " type="button" onclick="runProcessor()" value="Run!">
 
-        <input class="btn btn-warning" type="button" onclick="isRunning = false; clearInterval(interval); flushConsole(); if(iMem[pc]!==undefined) document.getElementById('instr').innerHTML='pc: 0x'+pc.toString(16)+' -- '+getAsm(iMem[pc]);" value="Pause">
+        <input class="btn btn-warning" type="button"
+            onclick="isRunning = false; clearInterval(interval); flushConsole(); if(iMem[pc]!==undefined) document.getElementById('instr').innerHTML='pc: 0x'+pc.toString(16)+' -- '+getAsm(iMem[pc]);"
+            value="Pause">
         <input class="btn btn-success " type="button" onclick="runProcessor()" value="Resume">
-        <input class="btn btn-success " type="button" onclick="isRunning = false; clearInterval(interval); Processor(); flushConsole(); if(iMem[pc]!==undefined) document.getElementById('instr').innerHTML='pc: 0x'+pc.toString(16)+' -- '+getAsm(iMem[pc]);" value="Step">
-        <br><br>Target Speed: 
+        <input class="btn btn-success " type="button"
+            onclick="isRunning = false; clearInterval(interval); Processor(); flushConsole(); if(iMem[pc]!==undefined) document.getElementById('instr').innerHTML='pc: 0x'+pc.toString(16)+' -- '+getAsm(iMem[pc]);"
+            value="Step">
+        <br><br>Target Speed:
         <select class="form-control" id="speed" onchange="if(interval){ clearInterval(interval); runProcessor(); }">
             <option value="max">Max (Uncapped / Turbo)</option>
             <option value="5000">5 MHz (batch 100k @ 20ms)</option>
@@ -196,7 +202,7 @@
                     inst = new Instruction.Instruction(lines[i])
                     document.getElementById("customhex").value += parseInt(inst.bin, 2).toString(16) + "\n"
                 } catch {
-                    alert("error on line "+String(i))
+                    alert("error on line " + String(i))
                     return
                 }
 
@@ -217,7 +223,7 @@
                 data = reader.result;
                 reset(data);
                 if (data.length > 500000) {
-                    document.getElementById("customhex").value = `[Loaded ${file.name} (${(file.size / (1024*1024)).toFixed(2)} MB) - Large file omitted from textarea for performance]`;
+                    document.getElementById("customhex").value = `[Loaded ${file.name} (${(file.size / (1024 * 1024)).toFixed(2)} MB) - Large file omitted from textarea for performance]`;
                 } else {
                     document.getElementById("customhex").value = data;
                 }
@@ -286,7 +292,7 @@
             if (interval) clearInterval(interval)
             pc = 0;
             cycles = 0;
-            document.getElementById("instr").innerHTML = "pc: " + pc.toString(16) 
+            document.getElementById("instr").innerHTML = "pc: " + pc.toString(16)
 
             rf = new Uint32Array(32);
             for (i = 0; i < 32; i++) rf[i] = 0
