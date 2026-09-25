@@ -37,7 +37,133 @@
         <h1>RISC-V.JS -- 4 Stage Pipeline</h1>
     </section>
     <section>Implementation of RISC-V 32I ISA in JS!</section>
+    <style>
+        .pipeline-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 16px 0;
+        }
+        .pipeline-stage {
+            flex: 1 1 200px;
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            padding: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: all 0.2s ease;
+        }
+        .pipeline-stage.active {
+            border-color: #007bff;
+            background: #eef6ff;
+        }
+        .pipeline-stage.stall {
+            border-color: #dc3545;
+            background: #fff0f1;
+        }
+        .pipeline-title {
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .pipeline-badge {
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+        .badge-fetch { background: #17a2b8; color: white; }
+        .badge-decode { background: #6f42c1; color: white; }
+        .badge-execute { background: #fd7e14; color: white; }
+        .badge-writeback { background: #28a745; color: white; }
+        .pipeline-pc {
+            font-family: monospace;
+            font-size: 13px;
+            font-weight: 600;
+            color: #212529;
+            margin-bottom: 4px;
+        }
+        .pipeline-asm {
+            font-family: monospace;
+            font-size: 12px;
+            color: #495057;
+            background: rgba(0,0,0,0.04);
+            padding: 4px 6px;
+            border-radius: 4px;
+            min-height: 24px;
+            word-break: break-all;
+        }
+        .hazard-panel {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin: 10px 0;
+        }
+        .hazard-pill {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 12px;
+            background: #e9ecef;
+            color: #495057;
+        }
+        .hazard-pill.active-hazard {
+            background: #dc3545;
+            color: white;
+            animation: pulse 1s infinite alternate;
+        }
+        .bypass-pill {
+            background: #28a745;
+            color: white;
+        }
+    </style>
     <section>
+        <div class="pipeline-container">
+            <div class="pipeline-stage active" id="stage-fetch">
+                <div class="pipeline-title">
+                    <span>1. Fetch</span>
+                    <span class="pipeline-badge badge-fetch">IF</span>
+                </div>
+                <div class="pipeline-pc" id="fetch-pc">PC: 0x00000000</div>
+                <div class="pipeline-asm" id="fetch-asm">Fetching...</div>
+            </div>
+            <div class="pipeline-stage" id="stage-decode">
+                <div class="pipeline-title">
+                    <span>2. Decode</span>
+                    <span class="pipeline-badge badge-decode">ID</span>
+                </div>
+                <div class="pipeline-pc" id="decode-pc">PC: --</div>
+                <div class="pipeline-asm" id="decode-asm">NOP</div>
+            </div>
+            <div class="pipeline-stage" id="stage-execute">
+                <div class="pipeline-title">
+                    <span>3. Execute</span>
+                    <span class="pipeline-badge badge-execute">EX</span>
+                </div>
+                <div class="pipeline-pc" id="execute-pc">PC: --</div>
+                <div class="pipeline-asm" id="execute-asm">NOP</div>
+            </div>
+            <div class="pipeline-stage" id="stage-writeback">
+                <div class="pipeline-title">
+                    <span>4. Writeback</span>
+                    <span class="pipeline-badge badge-writeback">WB</span>
+                </div>
+                <div class="pipeline-pc" id="writeback-pc">PC: --</div>
+                <div class="pipeline-asm" id="writeback-asm">NOP</div>
+            </div>
+        </div>
+
+        <div class="hazard-panel">
+            <span class="hazard-pill" id="pill-data-stall">Data Stall: False</span>
+            <span class="hazard-pill" id="pill-hazard-stall">Hazard Stall: False</span>
+            <span class="hazard-pill" id="pill-bypass">Bypass: None</span>
+        </div>
+
         <b id="instr"></b><br><br>
         Console:
         <pre id="console" style="max-height:300px; overflow: scroll;"></pre>
@@ -55,7 +181,6 @@
         <br>
         <!-- <pre id="decode" style="height:80px; overflow: scroll;"></pre> -->
         <pre id="execute" style="max-height:160px; overflow: scroll;"></pre>
-
 
         <br><br>
         Testbench:
@@ -287,6 +412,23 @@
             d2e = Invalid
             e2w = Invalid
 
+            let el;
+            if ((el = document.getElementById("fetch-pc"))) el.innerText = "PC: 0x00000000";
+            if ((el = document.getElementById("fetch-asm"))) el.innerText = "Ready";
+            if ((el = document.getElementById("decode-pc"))) el.innerText = "PC: --";
+            if ((el = document.getElementById("decode-asm"))) el.innerText = "NOP";
+            if ((el = document.getElementById("execute-pc"))) el.innerText = "PC: --";
+            if ((el = document.getElementById("execute-asm"))) el.innerText = "NOP";
+            if ((el = document.getElementById("writeback-pc"))) el.innerText = "PC: --";
+            if ((el = document.getElementById("writeback-asm"))) el.innerText = "NOP";
+
+            if ((el = document.getElementById("stage-decode"))) el.className = "pipeline-stage";
+            if ((el = document.getElementById("stage-execute"))) el.className = "pipeline-stage";
+            if ((el = document.getElementById("stage-writeback"))) el.className = "pipeline-stage";
+
+            if ((el = document.getElementById("pill-data-stall"))) { el.innerText = "Data Stall: False"; el.className = "hazard-pill"; }
+            if ((el = document.getElementById("pill-hazard-stall"))) { el.innerText = "Hazard Stall: False"; el.className = "hazard-pill"; }
+            if ((el = document.getElementById("pill-bypass"))) { el.innerText = "Bypass: None"; el.className = "hazard-pill"; }
         }
 
         function runProcessor() {

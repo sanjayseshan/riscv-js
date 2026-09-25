@@ -9,7 +9,11 @@ consoleBuffer = "";
 
 function flushConsole() {
     if (consoleBuffer.length > 0) {
-        document.getElementById("console").innerHTML += consoleBuffer;
+        let c = document.getElementById("console");
+        if (c) {
+            c.innerHTML += consoleBuffer;
+            c.scrollTop = c.scrollHeight;
+        }
         consoleBuffer = "";
     }
 }
@@ -34,7 +38,11 @@ function Processor() {
 
     inst = iMem[pc];
     if (inst === undefined) {
-        document.getElementById("console").innerHTML += "\n\nPC out of bounds: 0x" + pc.toString(16);
+        let c = document.getElementById("console");
+        if (c) {
+            c.innerHTML += "\n\nPC out of bounds: 0x" + pc.toString(16);
+            c.scrollTop = c.scrollHeight;
+        }
         return -1;
     }
 

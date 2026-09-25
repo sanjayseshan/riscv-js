@@ -28,7 +28,11 @@ consoleBuffer = "";
 
 function flushConsole() {
     if (consoleBuffer.length > 0) {
-        document.getElementById("console").innerHTML += consoleBuffer;
+        let c = document.getElementById("console");
+        if (c) {
+            c.innerHTML += consoleBuffer;
+            c.scrollTop = c.scrollHeight;
+        }
         consoleBuffer = "";
     }
 }
@@ -38,7 +42,11 @@ function Processor(cache=false) {
     inst = iMem[pc];
     if (inst === undefined) {
         flushConsole();
-        document.getElementById("console").innerHTML += "\n\nPC out of bounds: 0x" + pc.toString(16);
+        let c = document.getElementById("console");
+        if (c) {
+            c.innerHTML += "\n\nPC out of bounds: 0x" + pc.toString(16);
+            c.scrollTop = c.scrollHeight;
+        }
         return -1;
     }
     handleMem(pc, 0, 0, "i")
@@ -109,7 +117,11 @@ function Processor(cache=false) {
 
     if (eInst.iType == Unsupported) {
         flushConsole();
-        document.getElementById("console").innerHTML += "\n\nReached unsupported instruction...Quitting at pc=0x" + pc.toString(16)
+        let c = document.getElementById("console");
+        if (c) {
+            c.innerHTML += "\n\nReached unsupported instruction...Quitting at pc=0x" + pc.toString(16);
+            c.scrollTop = c.scrollHeight;
+        }
         console.log("Reached unsupported instruction (0x%x)", inst);
         console.log("Dumping the state of the processor");
         console.log("pc = 0x%x", pc);
@@ -121,7 +133,11 @@ function Processor(cache=false) {
     cycles++;
     if (cycles >= 2000000000) {
         flushConsole();
-        document.getElementById("console").innerHTML += "\n\nInfinite loop detected or cycle count exceeded...Quitting at pc=" + String(pc)
+        let c = document.getElementById("console");
+        if (c) {
+            c.innerHTML += "\n\nInfinite loop detected or cycle count exceeded...Quitting at pc=" + String(pc);
+            c.scrollTop = c.scrollHeight;
+        }
         console.log("Dumping the state of the processor");
         console.log("pc = 0x%x (Infinite loop detected)", pc);
         console.log(rf.fshow);

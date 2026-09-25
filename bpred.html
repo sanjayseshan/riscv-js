@@ -37,7 +37,108 @@
         <h1>RISC-V.JS + Branch Predictor</h1>
     </section>
     <section>Implementation of RISC-V 32I ISA in JS!</section>
+    <style>
+        .bpred-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+            margin: 16px 0;
+        }
+        .bpred-card {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 12px 14px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+        .bpred-card-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #495057;
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .bpred-card-val {
+            font-size: 20px;
+            font-weight: 700;
+            color: #212529;
+            margin-bottom: 4px;
+        }
+        .bpred-progress-bg {
+            background: #e9ecef;
+            border-radius: 6px;
+            height: 8px;
+            overflow: hidden;
+            margin-top: 6px;
+        }
+        .bpred-progress-bar {
+            height: 100%;
+            width: 0%;
+            border-radius: 6px;
+            transition: width 0.2s ease;
+        }
+        .bar-global { background: #17a2b8; }
+        .bar-local { background: #6f42c1; }
+        .bar-tourn { background: #28a745; }
+
+        .bpred-history-strip {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin: 10px 0;
+            min-height: 28px;
+            align-items: center;
+        }
+        .bpred-chip {
+            font-family: monospace;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 4px;
+        }
+        .chip-hit { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .chip-miss { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    </style>
     <section>
+        <div class="bpred-grid">
+            <div class="bpred-card">
+                <div class="bpred-card-title">
+                    <span>Tournament Predictor</span>
+                    <span id="rate-t" style="color: #28a745; font-weight: 700;">0.0%</span>
+                </div>
+                <div class="bpred-card-val" id="card-t">0 / 0</div>
+                <div class="bpred-progress-bg">
+                    <div class="bpred-progress-bar bar-tourn" id="bar-t"></div>
+                </div>
+            </div>
+            <div class="bpred-card">
+                <div class="bpred-card-title">
+                    <span>Global (2-bit BHT)</span>
+                    <span id="rate-g" style="color: #17a2b8; font-weight: 700;">0.0%</span>
+                </div>
+                <div class="bpred-card-val" id="card-g">0 / 0</div>
+                <div class="bpred-progress-bg">
+                    <div class="bpred-progress-bar bar-global" id="bar-g"></div>
+                </div>
+            </div>
+            <div class="bpred-card">
+                <div class="bpred-card-title">
+                    <span>Local History (3-bit)</span>
+                    <span id="rate-l" style="color: #6f42c1; font-weight: 700;">0.0%</span>
+                </div>
+                <div class="bpred-card-val" id="card-l">0 / 0</div>
+                <div class="bpred-progress-bg">
+                    <div class="bpred-progress-bar bar-local" id="bar-l"></div>
+                </div>
+            </div>
+        </div>
+
+        <b>Recent Branches:</b>
+        <div class="bpred-history-strip" id="branch-history">
+            <span style="font-size: 12px; color: #6c757d;">No branches executed yet</span>
+        </div>
+
         <b id="instr"></b><br><br>
         Console:
         <pre id="console" style="max-height:300px; overflow: scroll;"></pre>
@@ -344,6 +445,20 @@
             correct_l = 0
             correct_t = 0
             total = 0
+
+            const cardT = document.getElementById("card-t");
+            if (cardT) {
+                cardT.innerText = "0 / 0";
+                document.getElementById("rate-t").innerText = "0.0%";
+                document.getElementById("bar-t").style.width = "0%";
+                document.getElementById("card-g").innerText = "0 / 0";
+                document.getElementById("rate-g").innerText = "0.0%";
+                document.getElementById("bar-g").style.width = "0%";
+                document.getElementById("card-l").innerText = "0 / 0";
+                document.getElementById("rate-l").innerText = "0.0%";
+                document.getElementById("bar-l").style.width = "0%";
+                document.getElementById("branch-history").innerHTML = '<span style="font-size: 12px; color: #6c757d;">No branches executed yet</span>';
+            }
         }
         function makePrediction(address) {
             index_glob = histtable ^ address;
@@ -415,6 +530,41 @@
             if (res.local == taken) correct_l++
             if (res.tournament == taken) correct_t++
             document.getElementById("branchpred").innerHTML = "Global: " + correct_g.toString() + " Local: " + correct_l.toString() + " Tournament: " + correct_t.toString() + " Total: " + total.toString()
+
+            // Update visual predictor cards
+            const pctT = (correct_t / total * 100).toFixed(1);
+            const pctG = (correct_g / total * 100).toFixed(1);
+            const pctL = (correct_l / total * 100).toFixed(1);
+
+            const cardT = document.getElementById("card-t");
+            if (cardT) {
+                cardT.innerText = `${correct_t} / ${total}`;
+                document.getElementById("rate-t").innerText = `${pctT}%`;
+                document.getElementById("bar-t").style.width = `${pctT}%`;
+
+                document.getElementById("card-g").innerText = `${correct_g} / ${total}`;
+                document.getElementById("rate-g").innerText = `${pctG}%`;
+                document.getElementById("bar-g").style.width = `${pctG}%`;
+
+                document.getElementById("card-l").innerText = `${correct_l} / ${total}`;
+                document.getElementById("rate-l").innerText = `${pctL}%`;
+                document.getElementById("bar-l").style.width = `${pctL}%`;
+
+                // Add branch chip to history strip
+                const histStrip = document.getElementById("branch-history");
+                if (histStrip) {
+                    if (total === 1) histStrip.innerHTML = "";
+                    const chip = document.createElement("span");
+                    const isHit = res.tournament === taken;
+                    chip.className = "bpred-chip " + (isHit ? "chip-hit" : "chip-miss");
+                    chip.innerText = `0x${pc.toString(16)}: ${taken ? 'T' : 'NT'} (${isHit ? 'HIT' : 'MISS'})`;
+                    histStrip.insertBefore(chip, histStrip.firstChild);
+                    while (histStrip.children.length > 12) {
+                        histStrip.removeChild(histStrip.lastChild);
+                    }
+                }
+            }
+
             makeUpdate(taken, res.tournament, pc)
         }
     </script>

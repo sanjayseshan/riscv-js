@@ -37,7 +37,144 @@
         <h1>RISC-V.JS + Cache</h1>
     </section>
     <section>Implementation of RISC-V 32I ISA in JS!</section>
+    <style>
+        .cache-metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin: 15px 0 20px 0;
+        }
+        .cache-metric-card {
+            background: #fdfdfd;
+            border: 1px solid #e1e4e8;
+            border-radius: 8px;
+            padding: 12px 16px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.04);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .cache-card-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #495057;
+            display: flex;
+            justify-content: space-between;
+        }
+        .cache-card-val {
+            font-size: 20px;
+            font-weight: 700;
+            color: #212529;
+            font-family: monospace;
+        }
+        .cache-progress-bg {
+            background: #e9ecef;
+            border-radius: 4px;
+            height: 7px;
+            overflow: hidden;
+            width: 100%;
+        }
+        .cache-progress-bar {
+            height: 100%;
+            width: 0%;
+            transition: width 0.15s ease;
+        }
+        .bar-overall { background: #007bff; }
+        .bar-read { background: #28a745; }
+        .bar-write { background: #fd7e14; }
+
+        .cache-history-strip {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin: 10px 0 16px 0;
+            min-height: 28px;
+            align-items: center;
+        }
+        .cache-chip {
+            font-family: monospace;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 4px;
+        }
+        .chip-hit-read { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .chip-hit-write { background: #cce5ff; color: #004085; border: 1px solid #b8daff; }
+        .chip-miss-clean { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+        .chip-miss-dirty { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+
+        .cache-table-container {
+            max-height: 420px;
+            overflow: auto;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .cache-table-container table {
+            margin-bottom: 0;
+            font-family: monospace;
+            font-size: 13px;
+        }
+        .cache-table-container th {
+            position: sticky;
+            top: 0;
+            background: #343a40;
+            color: #fff;
+            padding: 8px 10px;
+            text-align: center;
+            border: 1px solid #454d55;
+            font-weight: 600;
+        }
+        .cache-table-container td {
+            padding: 6px 10px;
+            text-align: center;
+            border: 1px solid #dee2e6;
+        }
+        .status-clean { color: #28a745; font-weight: 600; }
+        .status-dirty { color: #dc3545; font-weight: 600; }
+        .status-invalid { color: #6c757d; font-style: italic; }
+        .row-highlight { background-color: #fff9db !important; }
+    </style>
     <section>
+        <div class="cache-metrics-grid">
+            <div class="cache-metric-card">
+                <div class="cache-card-title">
+                    <span>Overall Hit Rate</span>
+                    <span id="rate-overall" style="color: #007bff; font-weight: 700;">0.0%</span>
+                </div>
+                <div class="cache-card-val" id="val-overall">0 / 0</div>
+                <div class="cache-progress-bg">
+                    <div class="cache-progress-bar bar-overall" id="bar-overall"></div>
+                </div>
+            </div>
+            <div class="cache-metric-card">
+                <div class="cache-card-title">
+                    <span>Read Hit Rate</span>
+                    <span id="rate-read" style="color: #28a745; font-weight: 700;">0.0%</span>
+                </div>
+                <div class="cache-card-val" id="val-read">0 / 0</div>
+                <div class="cache-progress-bg">
+                    <div class="cache-progress-bar bar-read" id="bar-read"></div>
+                </div>
+            </div>
+            <div class="cache-metric-card">
+                <div class="cache-card-title">
+                    <span>Write Hit Rate</span>
+                    <span id="rate-write" style="color: #fd7e14; font-weight: 700;">0.0%</span>
+                </div>
+                <div class="cache-card-val" id="val-write">0 / 0</div>
+                <div class="cache-progress-bg">
+                    <div class="cache-progress-bar bar-write" id="bar-write"></div>
+                </div>
+            </div>
+        </div>
+
+        <b>Recent Cache Operations:</b>
+        <div class="cache-history-strip" id="cache-history">
+            <span style="font-size: 12px; color: #6c757d;">No memory accesses yet</span>
+        </div>
+
         <b id="instr"></b><br><br>
         Console:
         <pre id="console" style="max-height:300px; overflow: scroll;"></pre>
@@ -51,12 +188,13 @@
         Main Memory view:
         <pre id="memory" style="max-height:100px; overflow: scroll;"></pre>
         Cache view:
-        <div style="max-height:400px; overflow: scroll;" id="cache"></div>
-        logNumRows: <input type="number" class="form-control" id="logNumRows" value="4">
-        logBlockSize: <input type="number" class="form-control" id="logBlockSize" value="2">
-        associativity: <input type="number" class="form-control" id="associativity" value="2">
-        <input type="button" class="btn btn-warning" onclick="resetCache()" value="Update Cache">
-        <br>
+        <div class="cache-table-container" id="cache"></div>
+        <div class="form-inline" style="gap: 10px; margin-bottom: 10px;">
+            <label>logNumRows: <input type="number" class="form-control ml-1" id="logNumRows" value="4" style="width: 80px;"></label>
+            <label>logBlockSize: <input type="number" class="form-control ml-1" id="logBlockSize" value="2" style="width: 80px;"></label>
+            <label>associativity: <input type="number" class="form-control ml-1" id="associativity" value="2" style="width: 80px;"></label>
+            <input type="button" class="btn btn-warning" onclick="resetCache()" value="Update Cache">
+        </div>
         <!-- style="max-height:300px; overflow: scroll;" -->
         <b id="memupdate"></b><br>
         <b id="cacheupdate"></b>
@@ -289,8 +427,11 @@
 
             updateMem(program)
             x = 0
-            // while (x != -1) x=Processor() 
-
+            if (typeof resetCache === "function") {
+                resetCache();
+            }
+            document.getElementById("memupdate").innerHTML = ""
+            document.getElementById("cacheupdate").innerHTML = ""
         }
 
 
@@ -322,56 +463,87 @@
     </script>
 
     <script>
-        function createTable(tableArr, tableArr2, tableArr3) {
-            let table = document.createElement('table');//iterate over every array(row) within tableArr
-            table.insertRow();//Iterate over every index(cell) in each array(row)
-            idx = table.rows[table.rows.length - 1].insertCell();//add text to the created cell element
-            idx.bgColor = "orange"
-            idx.textContent = "";
-            for (i = 0; i < associativity; i++) {
-                idx = table.rows[table.rows.length - 1].insertCell();//add text to the created cell element
-                idx.textContent = "Way " + String(i);
-                idx.bgColor = "orange"
-                idx.colSpan = 2 + (1 << logBlockSize);
-            }
-            table.insertRow();//Iterate over every index(cell) in each array(row)
-            idx = table.rows[table.rows.length - 1].insertCell();//add text to the created cell element
-            idx.textContent = "Index";
-            idx.bgColor = "orange"
-            for (i = 0; i < associativity; i++) {
-                idx = table.rows[table.rows.length - 1].insertCell();//add text to the created cell element
-                idx.textContent = "Validity";
-                idx.bgColor = "orange"
-                idx = table.rows[table.rows.length - 1].insertCell();//add text to the created cell element
-                idx.textContent = "Tag";
-                idx.bgColor = "orange"
-                idx = table.rows[table.rows.length - 1].insertCell();//add text to the created cell element
-                idx.bgColor = "orange"
-                idx.textContent = "Data"
-                idx.colSpan = (1 << logBlockSize);
-            }
-            for (i = 0; i < tableArr.length; i++) {//Insert a new row element into the table element
-                table.insertRow();//Iterate over every index(cell) in each array(row)
-                idx = table.rows[table.rows.length - 1].insertCell();//add text to the created cell element
-                idx.textContent = i.toString(16);
-                for (j = 0; j < tableArr[i].length; j++) {//While iterating over the index(cell)
-                    //insert a cell into the table element
-                    newCell = table.rows[table.rows.length - 1].insertCell();//add text to the created cell element
-                    newCell.textContent = (tableArr2[i][j] == 0) ? "Invalid" : ((tableArr2[i][j] == 1) ? "Clean" : "Dirty");
-                    newCell2 = table.rows[table.rows.length - 1].insertCell();//add text to the created cell element
-                    newCell2.textContent = String(tableArr[i][j].toString(16));
+        let lastAccessedIndex = -1;
 
-                    for (k = 0; k < (1 << logBlockSize); k++) {
-                        newCell2 = table.rows[table.rows.length - 1].insertCell();//add text to the created cell element
-                        newCell2.textContent = String(tableArr3[i][j][k].toString(16));
+        function createTable(tableArr, tableArr2, tableArr3, activeIdx = -1) {
+            let table = document.createElement('table');
+            table.className = "table table-sm table-bordered table-hover";
+            
+            // Header Row 1: Way spans
+            let tr1 = table.insertRow();
+            let thIdx = document.createElement('th');
+            thIdx.textContent = "Index";
+            thIdx.rowSpan = 2;
+            thIdx.style.verticalAlign = "middle";
+            tr1.appendChild(thIdx);
+
+            for (let i = 0; i < associativity; i++) {
+                let thWay = document.createElement('th');
+                thWay.textContent = "Way " + String(i);
+                thWay.colSpan = 2 + (1 << logBlockSize);
+                tr1.appendChild(thWay);
+            }
+
+            // Header Row 2: Sub-columns
+            let tr2 = table.insertRow();
+            for (let i = 0; i < associativity; i++) {
+                let thVal = document.createElement('th');
+                thVal.textContent = "State";
+                thVal.style.fontSize = "11px";
+                tr2.appendChild(thVal);
+
+                let thTag = document.createElement('th');
+                thTag.textContent = "Tag";
+                thTag.style.fontSize = "11px";
+                tr2.appendChild(thTag);
+
+                for (let k = 0; k < (1 << logBlockSize); k++) {
+                    let thWord = document.createElement('th');
+                    thWord.textContent = "W" + k;
+                    thWord.style.fontSize = "11px";
+                    tr2.appendChild(thWord);
+                }
+            }
+
+            // Rows
+            for (let i = 0; i < tableArr.length; i++) {
+                let tr = table.insertRow();
+                if (i === activeIdx) {
+                    tr.className = "row-highlight";
+                }
+                let tdIdx = tr.insertCell();
+                tdIdx.style.fontWeight = "bold";
+                tdIdx.textContent = "0x" + i.toString(16).toUpperCase();
+
+                for (let j = 0; j < tableArr[i].length; j++) {
+                    let tdState = tr.insertCell();
+                    let st = tableArr2[i][j];
+                    if (st === 0) {
+                        tdState.innerHTML = '<span class="status-invalid">Inv</span>';
+                    } else if (st === 1) {
+                        tdState.innerHTML = '<span class="status-clean">Clean</span>';
+                    } else {
+                        tdState.innerHTML = '<span class="status-dirty">Dirty</span>';
+                    }
+
+                    let tdTag = tr.insertCell();
+                    tdTag.textContent = "0x" + tableArr[i][j].toString(16);
+
+                    for (let k = 0; k < (1 << logBlockSize); k++) {
+                        let tdData = tr.insertCell();
+                        tdData.textContent = "0x" + (tableArr3[i][j][k] >>> 0).toString(16);
                     }
                 }
             }
-            document.getElementById("memory").innerHTML = ""
-            for (const [key, value] of Object.entries(cacheMM)) {
-                document.getElementById("memory").innerHTML += (`0x${parseInt(key).toString(16)}: 0x${value.toString(16)}`) + "\n";
+
+            const memEl = document.getElementById("memory");
+            if (memEl) {
+                memEl.innerHTML = "";
+                for (const [key, value] of Object.entries(cacheMM)) {
+                    memEl.innerHTML += (`0x${parseInt(key).toString(16)}: 0x${(value >>> 0).toString(16)}`) + "\n";
+                }
             }
-            return table
+            return table;
         }
 
         logNumRows = 4;
@@ -427,7 +599,27 @@
                     lru[i][j] = 0;
             }
             table = createTable(tag, validBit, dataArray)
-            document.getElementById("cache").innerHTML = "<table>" + table.innerHTML + "</table>"
+            document.getElementById("cache").innerHTML = ""
+            document.getElementById("cache").appendChild(table)
+
+            // Reset visual metric cards
+            const valOverall = document.getElementById("val-overall");
+            if (valOverall) {
+                valOverall.innerText = "0 / 0";
+                document.getElementById("rate-overall").innerText = "0.0%";
+                document.getElementById("bar-overall").style.width = "0%";
+
+                document.getElementById("val-read").innerText = "0 / 0";
+                document.getElementById("rate-read").innerText = "0.0%";
+                document.getElementById("bar-read").style.width = "0%";
+
+                document.getElementById("val-write").innerText = "0 / 0";
+                document.getElementById("rate-write").innerText = "0.0%";
+                document.getElementById("bar-write").style.width = "0%";
+
+                const histStrip = document.getElementById("cache-history");
+                if (histStrip) histStrip.innerHTML = '<span style="font-size: 12px; color: #6c757d;">No memory accesses yet</span>';
+            }
         }
 
 
@@ -452,6 +644,9 @@
             if (isRead) readReqs++;
             else writeReqs++;
 
+            let opType = isRead ? "READ" : "WRITE";
+            let opResult = "hit"; // "hit", "clean_miss", "dirty_miss"
+
             mask = 0xffffffff << (logNumRows + logBlockSize);
             mask2 = 0xffffffff << logBlockSize;
             tag_new = (virtualAddr & mask) >> (logNumRows + logBlockSize);
@@ -469,10 +664,12 @@
                 if (validBit[index][j] != 0 && tag[index][j] == tag_new) {
                     if (isRead) {
                         readHits++;
+                        opResult = "hit";
                         console.log("read hit ", virtualAddr);
                         document.getElementById("cacheupdate").innerHTML = "read hit for addr " + (virtualAddr << 2).toString(16) + " at index " + index.toString(16) + " with way " + j.toString()
                     } else {
                         writeHits++;
+                        opResult = "hit";
                         console.log("write hit ", virtualAddr);
                         dataArray[index][j][block] = data
                         document.getElementById("cacheupdate").innerHTML = "write hit for addr " + (virtualAddr << 2).toString(16) + " at index " + index.toString(16) + " with way " + j.toString()
@@ -483,6 +680,7 @@
 
             if (j == associativity) {
                 if (lastInvalid != 0xFFFFFFFF) {
+                    opResult = "clean_miss";
                     tag[index][lastInvalid] = tag_new;
                     validBit[index][lastInvalid] = (isRead) ? 1 : 2;
                     console.log("miss clean ", virtualAddr, tag_new);
@@ -502,11 +700,13 @@
 
 
                     if (validBit[index][maxLRUidx] == 1) {
+                        opResult = "clean_miss";
                         console.log("miss clean ", virtualAddr);
                         dataArray[index][maxLRUidx] = getLineMainMem(origAddr)
 
                         document.getElementById("cacheupdate").innerHTML = "clean miss for addr " + (virtualAddr << 2).toString(16) + " at index " + index.toString(16) + " with LRU way " + maxLRUidx.toString()
                     } else {
+                        opResult = "dirty_miss";
                         console.log("miss dirty ", virtualAddr);
                         updateAddr = (tag[index][maxLRUidx] << (logNumRows + logBlockSize)) | (index << logBlockSize)
                         document.getElementById("cacheupdate").innerHTML = "dirty miss for addr " + (virtualAddr << 2).toString(16) + " at index " + index.toString(16) + " with LRU way " + maxLRUidx.toString() + " writeback to " + updateAddr.toString(16)
@@ -528,8 +728,56 @@
                     lru[index][j] = 0;
             }
 
-            table = createTable(tag, validBit, dataArray)
-            document.getElementById("cache").innerHTML = "<table>" + table.innerHTML + "</table>"
+            table = createTable(tag, validBit, dataArray, index)
+            document.getElementById("cache").innerHTML = ""
+            document.getElementById("cache").appendChild(table)
+
+            // Update visual metric cards
+            const totalHits = readHits + writeHits;
+            const totalReqs = readReqs + writeReqs;
+            const pctOverall = totalReqs > 0 ? (totalHits / totalReqs * 100).toFixed(1) : "0.0";
+            const pctRead = readReqs > 0 ? (readHits / readReqs * 100).toFixed(1) : "0.0";
+            const pctWrite = writeReqs > 0 ? (writeHits / writeReqs * 100).toFixed(1) : "0.0";
+
+            const valOverall = document.getElementById("val-overall");
+            if (valOverall) {
+                valOverall.innerText = `${totalHits} / ${totalReqs}`;
+                document.getElementById("rate-overall").innerText = `${pctOverall}%`;
+                document.getElementById("bar-overall").style.width = `${pctOverall}%`;
+
+                document.getElementById("val-read").innerText = `${readHits} / ${readReqs}`;
+                document.getElementById("rate-read").innerText = `${pctRead}%`;
+                document.getElementById("bar-read").style.width = `${pctRead}%`;
+
+                document.getElementById("val-write").innerText = `${writeHits} / ${writeReqs}`;
+                document.getElementById("rate-write").innerText = `${pctWrite}%`;
+                document.getElementById("bar-write").style.width = `${pctWrite}%`;
+
+                // Add chip to history strip
+                const histStrip = document.getElementById("cache-history");
+                if (histStrip) {
+                    if (totalReqs === 1) histStrip.innerHTML = "";
+                    const chip = document.createElement("span");
+                    let cls = "cache-chip ";
+                    let desc = "";
+                    if (opResult === "hit") {
+                        cls += isRead ? "chip-hit-read" : "chip-hit-write";
+                        desc = `${opType} HIT`;
+                    } else if (opResult === "clean_miss") {
+                        cls += "chip-miss-clean";
+                        desc = `${opType} MISS (Clean)`;
+                    } else {
+                        cls += "chip-miss-dirty";
+                        desc = `${opType} MISS (Dirty WB)`;
+                    }
+                    chip.className = cls;
+                    chip.innerText = `0x${((virtualAddr << 2) >>> 0).toString(16)}: ${desc}`;
+                    histStrip.insertBefore(chip, histStrip.firstChild);
+                    while (histStrip.children.length > 12) {
+                        histStrip.removeChild(histStrip.lastChild);
+                    }
+                }
+            }
 
             document.getElementById("cacheupdate").innerHTML += "<br>Read Hits: " + readHits.toString() + " Write Hits: " + writeHits.toString() + " Read Reqs: " + readReqs.toString() + " Write Reqs: " + writeReqs.toString()
         }

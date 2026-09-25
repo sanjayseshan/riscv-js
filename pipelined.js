@@ -58,7 +58,11 @@ consoleBuffer = "";
 
 function flushConsole() {
     if (consoleBuffer.length > 0) {
-        document.getElementById("console").innerHTML += consoleBuffer;
+        let c = document.getElementById("console");
+        if (c) {
+            c.innerHTML += consoleBuffer;
+            c.scrollTop = c.scrollHeight;
+        }
         consoleBuffer = "";
     }
 }
@@ -98,7 +102,11 @@ function Processor() {
 
         if (e2w_v.iType == Unsupported) {
             flushConsole();
-            document.getElementById("console").innerHTML += "\n\nReached unsupported instruction...Quitting at pc=0x" + pc.toString(16)
+            let c = document.getElementById("console");
+            if (c) {
+                c.innerHTML += "\n\nReached unsupported instruction...Quitting at pc=0x" + pc.toString(16);
+                c.scrollTop = c.scrollHeight;
+            }
 
             console.log("Reached unsupported instruction");
             console.log("Dumping the state of the processor");
@@ -201,6 +209,43 @@ function Processor() {
         fetchf2d = fetch({ fetchAction: Stall, redirectPC: -1 });
         d2e = Invalid;
     }
+    let fetchPcText = "0x" + (pc + 4).toString(16);
+    let fetchAsmText = iMem[pc + 4] !== undefined ? getAsm(iMem[pc + 4]) : "Stall / End";
+    let decodePcText = isValid(fetchf2d) ? "0x" + fromMaybe(-1, fetchf2d).pc.toString(16) : "--";
+    let decodeAsmText = isValid(fetchf2d) ? getAsm(fromMaybe(-1, fetchf2d).inst) : "NOP / Bubble";
+    let executePcText = isValid(d2e) ? "0x" + fromMaybe(-1, d2e).pc.toString(16) : "--";
+    let executeAsmText = isValid(d2e) ? getAsm(fromMaybe(-1, d2e).inst) : "NOP / Bubble";
+    let writebackPcText = isValid(e2w) ? "0x" + fromMaybe(-1, e2w).pc.toString(16) : "--";
+    let writebackAsmText = isValid(e2w) ? getAsm(fromMaybe(-1, e2w).inst) : "NOP / Bubble";
+
+    let el;
+    if ((el = document.getElementById("fetch-pc"))) el.innerText = "PC: " + fetchPcText;
+    if ((el = document.getElementById("fetch-asm"))) el.innerText = fetchAsmText;
+    if ((el = document.getElementById("decode-pc"))) el.innerText = "PC: " + decodePcText;
+    if ((el = document.getElementById("decode-asm"))) el.innerText = decodeAsmText;
+    if ((el = document.getElementById("execute-pc"))) el.innerText = "PC: " + executePcText;
+    if ((el = document.getElementById("execute-asm"))) el.innerText = executeAsmText;
+    if ((el = document.getElementById("writeback-pc"))) el.innerText = "PC: " + writebackPcText;
+    if ((el = document.getElementById("writeback-asm"))) el.innerText = writebackAsmText;
+
+    if ((el = document.getElementById("stage-decode"))) el.className = "pipeline-stage " + (isValid(fetchf2d) ? "active" : "");
+    if ((el = document.getElementById("stage-execute"))) el.className = "pipeline-stage " + (hazardStallE ? "stall" : (isValid(d2e) ? "active" : ""));
+    if ((el = document.getElementById("stage-writeback"))) el.className = "pipeline-stage " + (dDataStall ? "stall" : (isValid(e2w) ? "active" : ""));
+
+    if ((el = document.getElementById("pill-data-stall"))) {
+        el.innerText = "Data Stall: " + (dDataStall ? "TRUE" : "False");
+        el.className = "hazard-pill " + (dDataStall ? "active-hazard" : "");
+    }
+    if ((el = document.getElementById("pill-hazard-stall"))) {
+        el.innerText = "Hazard Stall: " + (hazardStallE ? "TRUE" : "False");
+        el.className = "hazard-pill " + (hazardStallE ? "active-hazard" : "");
+    }
+    if ((el = document.getElementById("pill-bypass"))) {
+        let isBypassing = isValid(dstW) && fromMaybe(0, dstW) !== 0;
+        el.innerText = isBypassing ? "Bypass: x" + fromMaybe(0, dstW) + " = 0x" + (fromMaybe(0, dataW) >>> 0).toString(16) : "Bypass: None";
+        el.className = "hazard-pill " + (isBypassing ? "bypass-pill" : "");
+    }
+
     document.getElementById("instr").innerHTML = "Fetch pc: " + (pc + 4).toString(16) + "<br>"
     if (isValid(fetchf2d)) document.getElementById("instr").innerHTML += "Decode pc: " + fromMaybe(-1, fetchf2d).pc.toString(16) + " -- " + getAsm(fromMaybe(-1, fetchf2d).inst) + "<br>"
     else document.getElementById("instr").innerHTML += "Decode: NOP<br>"
